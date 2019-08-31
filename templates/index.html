@@ -1,0 +1,24 @@
+{% extends 'base.html' %}
+
+{% block title %}Busca tu celda{% endblock %}
+
+{% block head %}
+<script src='https://api.tiles.mapbox.com/mapbox-gl-js/v1.3.0/mapbox-gl.js'></script>
+<link href='https://api.tiles.mapbox.com/mapbox-gl-js/v1.3.0/mapbox-gl.css' rel='stylesheet' />
+{% endblock %}
+
+{% block main %}
+<div id='map' style="position:absolute; top:0; bottom:0; width:100%;"></div>
+{% endblock %}
+
+{% block bodyafter %}
+<script>
+mapboxgl.accessToken = 'pk.eyJ1Ijoiam9zZXp5IiwiYSI6ImNqd3ZmdGFmbzA4dGQ0OW41em5reDU3cmMifQ.5Ab2UzBgSWEoRgjxN9fMhg';
+var map = new mapboxgl.Map({
+	container: 'map',
+	style: 'mapbox://styles/mapbox/streets-v11',
+	center: [-75.375977, 6.150244],
+	zoom: 14
+});
+</script>
+{% endblock %}
