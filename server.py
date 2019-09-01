@@ -1,10 +1,8 @@
 #!/usr/bin/env python3
 
-# import sys
 import json
-# from datetime import datetime
 
-from flask import Flask, render_template, jsonify
+from flask import Flask, render_template, jsonify, redirect
 
 
 # Config
@@ -31,37 +29,22 @@ def index():
 def available_spots():
     spots = [
         {
-            'name': "Spot 1",
+            'id': 1234,
             'free': True,
             'coords': [-75.378102, 6.149930],
         },
         {
-            'name': "Spot 2",
+            'id': 1235,
             'free': False,
             'coords': [-75.378106, 6.149850]
         }
     ]
     return jsonify(spots)
 
-# @app.route('/favicon.ico')
-# def favicon():
-#     return redirect("/static/favicon.ico")
 
-# @app.route('/<path>')
-# def render_page(path):
-#     page = PAGES[f'/{path}']
-#     return render_template(
-#         page['template'],
-#         now=datetime.now(),
-#         **CONFIG,
-#         **page
-#     )
-
-# @app.route('/posts/<path>')
-# def render_post(path):
-#     print(path)
-#     post = POSTS[f'/posts/{path}']
-#     return render_template('post.html', now=datetime.now(), **CONFIG, **post)
+@app.route('/favicon.ico')
+def favicon():
+    return redirect("/static/favicon.ico")
 
 
 if __name__ == '__main__':
