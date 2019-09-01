@@ -13,12 +13,68 @@
 
 {% block bodyafter %}
 <script>
-mapboxgl.accessToken = 'pk.eyJ1Ijoiam9zZXp5IiwiYSI6ImNqd3ZmdGFmbzA4dGQ0OW41em5reDU3cmMifQ.5Ab2UzBgSWEoRgjxN9fMhg';
+mapboxgl.accessToken = '{{MAP_API}}';
 var map = new mapboxgl.Map({
-	container: 'map',
-	style: 'mapbox://styles/mapbox/streets-v11',
-	center: [-75.375977, 6.150244],
-	zoom: 14
+    container: 'map',
+    style: 'mapbox://styles/mapbox/streets-v11',
+    center: [-75.375977, 6.150244],
+    zoom: 14
 });
+
+var map_loaded = false
+
+map.on('load', function () {
+    map.addSource('spots', {
+        type: 'geojson',
+        data: {
+            "type": "FeatureCollection",
+            "features": []
+        }
+    });
+    map.addLayer({
+        id: "free_spots",
+        type: "circle",
+        source: "spots",
+        paint: {
+            "circle-color": {type: 'identity', property: 'color'},
+            "circle-radius": 5,
+            "circle-stroke-width": 1,
+            "circle-stroke-color": "#fff"
+        }
+    });
+    map_loaded = true
+})
+
+function updateSpots(spots) {
+    if (!map_loaded) return
+
+    var spot_features = []
+    spots.forEach(function (spot) {
+        spot_features.push({
+            "type": "Feature",
+            "geometry": {
+                "type": "Point",
+                "coordinates": spot.coords
+            },
+            "properties": {
+                "color": spot.free ? "#0f0" : "#f00",
+            }
+        })
+    })
+    map.getSource('spots').setData({
+        "type": "FeatureCollection",
+        "features": spot_features
+    })
+}
+
+function fetchSpots() {
+    $.getJSON('/spots').done(updateSpots).fail(
+       function(response, textStatus, error) {
+         console.log(response, textStatus, error)
+       }
+    )
+}
+
+setInterval(fetchSpots, 3000);
 </script>
 {% endblock %}
