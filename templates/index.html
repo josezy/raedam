@@ -13,15 +13,17 @@
 
 {% block bodyafter %}
 <script>
-mapboxgl.accessToken = '{{MAP_API}}';
+var map_loaded = false
+var spots_timer = undefined
+var request_counter = 0
+
+mapboxgl.accessToken = '{{MAP_API}}'
 var map = new mapboxgl.Map({
     container: 'map',
     style: 'mapbox://styles/mapbox/streets-v11',
     center: [-75.375977, 6.150244],
     zoom: 14
-});
-
-var map_loaded = false
+})
 
 map.on('load', function () {
     map.addSource('spots', {
@@ -30,7 +32,7 @@ map.on('load', function () {
             "type": "FeatureCollection",
             "features": []
         }
-    });
+    })
     map.addLayer({
         id: "free_spots",
         type: "circle",
@@ -41,12 +43,16 @@ map.on('load', function () {
             "circle-stroke-width": 1,
             "circle-stroke-color": "#fff"
         }
-    });
+    })
     map_loaded = true
+    spots_timer = setInterval(fetchSpots, {{FETCH_SPOTS_INTERVAL}})
 })
 
 function updateSpots(spots) {
     if (!map_loaded) return
+
+    if (++request_counter >= {{MAX_SPOT_REQUESTS}})
+        clearInterval(spots_timer)
 
     var spot_features = []
     spots.forEach(function (spot) {
@@ -69,12 +75,11 @@ function updateSpots(spots) {
 
 function fetchSpots() {
     $.getJSON('/spots').done(updateSpots).fail(
-       function(response, textStatus, error) {
-         console.log(response, textStatus, error)
-       }
+        function(response, textStatus, error) {
+            console.log(response, textStatus, error)
+        }
     )
 }
 
-setInterval(fetchSpots, 3000);
 </script>
 {% endblock %}
