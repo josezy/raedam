@@ -15,7 +15,7 @@
 <script>
 var map_loaded = false
 var spots_timer = undefined
-var request_counter = 0
+var request_counter = 1
 
 mapboxgl.accessToken = '{{MAP_API}}'
 var map = new mapboxgl.Map({
@@ -46,6 +46,7 @@ map.on('load', function () {
     })
     map_loaded = true
     spots_timer = setInterval(fetchSpots, {{FETCH_SPOTS_INTERVAL}})
+    fetchSpots()
 })
 
 function updateSpots(spots) {
