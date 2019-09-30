@@ -1,6 +1,8 @@
 import os
 import json
 
+from geopy.distance import geodesic
+
 
 def append_json_file(filepath, new_data):
     data_collected = load_json_file(filepath)
@@ -36,3 +38,15 @@ def parse_coords(coords):
             f"Coordinates format is 'xx.xxxx,yy.yyyy'. Got '{coords}' instead"
         )
     return float(_coords[0]), float(_coords[1])
+
+
+def swap_coords(coords):
+    swap = list(coords)
+    swap.reverse()
+    return swap
+
+
+def coords_in_radius(coords, center, radius, lnglat=True):
+    _coords = swap_coords(coords) if lnglat else coords
+    _center = swap_coords(center) if lnglat else center
+    return geodesic(_coords, _center).meters < radius
