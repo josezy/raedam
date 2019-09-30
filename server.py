@@ -2,7 +2,9 @@
 
 import json
 
-from flask import Flask, render_template, jsonify, redirect
+from decimal import Decimal
+
+from flask import Flask, render_template, jsonify, redirect, request
 from util import load_json_file
 from detector import load_model
 
@@ -35,10 +37,28 @@ def index():
     return render_template('index.html', **CONFIG)
 
 
-@app.route('/spots', methods=['GET'])
-def available_spots():
-    spots = load_json_file(SPOTS_FILE)
-    return jsonify(spots)
+@app.route('/zones', methods=['GET'])
+def zones_data():
+    lat = Decimal(request.args.get('latitude'))
+    lon = Decimal(request.args.get('longitude'))
+    print(lat, lon)
+    # TODO
+    # Get closest cameras (stream link)
+    # for every camera in the range
+    # grab a frame, detect free spots (based on marked spots)
+    # build and return json with data
+    return jsonify([
+        {
+            'coords': [-75.378855, 6.148160],
+            'free_spots': 13,
+            'total_spots': 15,
+        },
+        {
+            'coords': [-75.378721, 6.148259],
+            'free_spots': 5,
+            'total_spots': 18,
+        }
+    ])
 
 
 if __name__ == '__main__':
