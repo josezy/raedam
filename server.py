@@ -2,10 +2,9 @@
 
 import json
 
+from flask import Flask, render_template, jsonify, redirect, request
 from decimal import Decimal
 
-from flask import Flask, render_template, jsonify, redirect, request
-from util import load_json_file
 from detector import load_model
 
 
