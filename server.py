@@ -6,6 +6,30 @@ from decimal import Decimal
 from detector import load_model
 
 
+VIDEO_SOURCES = [
+    {
+        'name': "Parking 1",
+        'coords': [Decimal('-75.378882'), Decimal('6.146590')],  # San Nicolas
+        'url': "http://199.48.198.27/mjpg/video.mjpg"
+    },
+    # {
+    #     'name': "Parking Huge",
+    #     'coords': [Decimal('-75.378855'), Decimal('6.148160')],  # Exito
+    #     'url': "http://46.186.121.222:83/GetData.cgi"
+    # },
+    {
+        'name': "Parking River",
+        'coords': [Decimal('-75.389125'), Decimal('6.146871')],  # 6ta etapa
+        'url': "http://75.147.0.206/mjpg/video.mjpg"
+    },
+    {
+        'name': "Good Parking Canada",
+        'coords': [Decimal('-75.389356'), Decimal('6.147737')],  # Iglesia
+        'url': "http://192.75.71.26/mjpg/video.mjpg"
+    },
+]
+
+
 # Config
 app = Flask(__name__)
 CONFIG_FILE = 'config.json'
