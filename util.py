@@ -4,10 +4,7 @@ import json
 
 def append_json_file(filepath, new_data):
     data_collected = load_json_file(filepath)
-
-    # append data to 'data_collected' dict
-    data_collected[len(data_collected)] = new_data
-
+    data_collected.append(new_data)
     save_json_file(filepath, data_collected)
 
 
