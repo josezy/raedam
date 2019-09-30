@@ -1,5 +1,3 @@
-#!/usr/bin/env python3
-
 import json
 
 from flask import Flask, render_template, jsonify, redirect, request
@@ -39,8 +37,9 @@ def index():
 @app.route('/zones', methods=['GET'])
 def zones_data():
     lat = Decimal(request.args.get('latitude'))
-    lon = Decimal(request.args.get('longitude'))
-    print(lat, lon)
+    lng = Decimal(request.args.get('longitude'))
+    print(lng, lat)
+
     # TODO
     # Get closest cameras (stream link)
     # for every camera in the range
@@ -60,5 +59,6 @@ def zones_data():
     ])
 
 
+print("[i] Server up and running...")
 if __name__ == '__main__':
     app.run()
