@@ -9,6 +9,11 @@ ipdb = "*"
 
 [packages]
 flask = "*"
+mrcnn = "*"
+numpy = "*"
+scikit-image = "*"
+tensorflow = "*"
+keras = "*"
 
 [requires]
 python_version = "3.7"

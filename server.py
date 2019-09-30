@@ -4,6 +4,7 @@ import json
 
 from flask import Flask, render_template, jsonify, redirect
 from util import load_json_file
+from detector import load_model
 
 
 # Config
@@ -19,6 +20,8 @@ def load_config(fname=CONFIG_FILE):
 
 
 CONFIG = load_config(CONFIG_FILE)
+
+model = load_model()
 
 
 # Routes
