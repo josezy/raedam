@@ -1,11 +1,14 @@
+import cv2
 import json
 
 from flask import Flask, render_template, jsonify, redirect, request
 from decimal import Decimal
 
 from detector import load_model
+from util import coords_in_radius
 
 
+VIDEO_SOURCES_RADIUS = 500
 VIDEO_SOURCES = [
     {
         'name': "Parking 1",
@@ -62,12 +65,29 @@ def index():
 def zones_data():
     lat = Decimal(request.args.get('latitude'))
     lng = Decimal(request.args.get('longitude'))
-    print(lng, lat)
 
-    # TODO
-    # Get closest cameras (stream link)
-    # for every camera in the range
-    # grab a frame, detect free spots (based on marked spots)
+    print(f"[+] Getting closest cameras to point ({lat}, {lng})")
+    closest_sources = [
+        source for source in VIDEO_SOURCES
+        if coords_in_radius(
+            source['coords'],
+            [lng, lat],
+            VIDEO_SOURCES_RADIUS
+        )
+    ]
+
+    print(f"[+] Getting frames for {len(closest_sources)} cameras")
+    frames = []
+    for source in closest_sources:
+        cap = cv2.VideoCapture(source['url'])
+        _, frame = cap.read()
+        frames.append(cv2.cvtColor(frame, cv2.COLOR_BGR2RGB))
+
+    print(f"[+] Performing detection for {len(closest_sources)} cameras")
+    # results = model.detect(frames, verbose=0)[0]
+
+    # load pre marked spots for every zone and check for free spots
+    # overlaps = mrcnn.utils.compute_overlaps(car_boxes, parking_areas)
     # build and return json with data
     return jsonify([
         {
