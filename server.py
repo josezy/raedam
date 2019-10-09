@@ -1,5 +1,6 @@
 import cv2
 import json
+import tensorflow as tf
 
 from flask import Flask, render_template, jsonify, redirect, request
 from decimal import Decimal
@@ -47,7 +48,8 @@ def load_config(fname=CONFIG_FILE):
 
 CONFIG = load_config(CONFIG_FILE)
 
-model = load_model()
+app.model = load_model()
+app.graph = tf.get_default_graph()
 
 
 # Routes
@@ -74,7 +76,7 @@ def zones_data():
             [lng, lat],
             VIDEO_SOURCES_RADIUS
         )
-    ]
+    ][:1]  # Hard limit number of detections
 
     print(f"[+] Getting frames for {len(closest_sources)} cameras")
     frames = []
@@ -84,8 +86,11 @@ def zones_data():
         frames.append(cv2.cvtColor(frame, cv2.COLOR_BGR2RGB))
 
     print(f"[+] Performing detection for {len(closest_sources)} cameras")
-    # results = model.detect(frames, verbose=0)[0]
+    assert len(frames) == 1, 'Multiple frame detection not implemented yet'
+    with app.graph.as_default():
+        r = app.model.detect(frames, verbose=0)[0]
 
+    print(r)
     # load pre marked spots for every zone and check for free spots
     # overlaps = mrcnn.utils.compute_overlaps(car_boxes, parking_areas)
     # build and return json with data
@@ -103,6 +108,6 @@ def zones_data():
     ])
 
 
-print("[i] Server up and running...")
 if __name__ == '__main__':
+    print("[i] Server up and running...")
     app.run()
