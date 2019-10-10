@@ -1,18 +1,23 @@
 import cv2
 import json
+import mrcnn
+import numpy as np
 import tensorflow as tf
 
 from flask import Flask, render_template, jsonify, redirect, request
+from flask.json import JSONEncoder
 from decimal import Decimal
 
-from detector import load_model
+from detector import load_model, clean_boxes
 from util import coords_in_radius
 
 
+CAR_SCORE = 0.8
+CAR_CLS_NAMES = ['car', 'bus', 'truck']
 VIDEO_SOURCES_RADIUS = 500
-VIDEO_SOURCES = [
+VIDEO_SOURCES_DATA = [
     {
-        'name': "Parking 1",
+        'name': "parking_1",
         'coords': [Decimal('-75.378882'), Decimal('6.146590')],  # San Nicolas
         'url': "http://199.48.198.27/mjpg/video.mjpg"
     },
@@ -22,20 +27,34 @@ VIDEO_SOURCES = [
     #     'url': "http://46.186.121.222:83/GetData.cgi"
     # },
     {
-        'name': "Parking River",
+        'name': "parking_river",
         'coords': [Decimal('-75.389125'), Decimal('6.146871')],  # 6ta etapa
         'url': "http://75.147.0.206/mjpg/video.mjpg"
     },
     {
-        'name': "Good Parking Canada",
+        'name': "good_parking_canada",
         'coords': [Decimal('-75.389356'), Decimal('6.147737')],  # Iglesia
         'url': "http://192.75.71.26/mjpg/video.mjpg"
     },
 ]
 
 
+class ExtendedEncoder(JSONEncoder):
+    def default(self, obj):
+        try:
+            if isinstance(obj, Decimal):
+                return str(obj)
+            iterable = iter(obj)
+        except TypeError:
+            pass
+        else:
+            return list(iterable)
+        return JSONEncoder.default(self, obj)
+
+
 # Config
 app = Flask(__name__)
+app.json_encoder = ExtendedEncoder
 CONFIG_FILE = 'config.json'
 SPOTS_FILE = 'spots.json'
 
@@ -47,6 +66,15 @@ def load_config(fname=CONFIG_FILE):
 
 
 CONFIG = load_config(CONFIG_FILE)
+ALL_SPOTS = load_config(SPOTS_FILE)
+
+VIDEO_SOURCES = []
+for src in VIDEO_SOURCES_DATA:
+    if src['name'] in ALL_SPOTS:
+        src_data = src
+        src_data['spots'] = ALL_SPOTS[src['name']]
+        VIDEO_SOURCES.append(src_data)
+
 
 app.model = load_model()
 app.graph = tf.get_default_graph()
@@ -78,34 +106,47 @@ def zones_data():
         )
     ][:1]  # Hard limit number of detections
 
-    print(f"[+] Getting frames for {len(closest_sources)} cameras")
-    frames = []
+    assert len(closest_sources) == 1,\
+        'Multiple frame detection not implemented yet'
+
+    parking_data = []
     for source in closest_sources:
         cap = cv2.VideoCapture(source['url'])
-        _, frame = cap.read()
-        frames.append(cv2.cvtColor(frame, cv2.COLOR_BGR2RGB))
+        success, frame = cap.read()
+        if not success:
+            continue
 
-    print(f"[+] Performing detection for {len(closest_sources)} cameras")
-    assert len(frames) == 1, 'Multiple frame detection not implemented yet'
-    with app.graph.as_default():
-        r = app.model.detect(frames, verbose=0)[0]
+        print(f"[+] Performing detection for source '{source['name']}'")
+        rgb_frame = cv2.cvtColor(frame, cv2.COLOR_BGR2RGB)
+        with app.graph.as_default():
+            results = app.model.detect([rgb_frame], verbose=0)
 
-    print(r)
-    # load pre marked spots for every zone and check for free spots
-    # overlaps = mrcnn.utils.compute_overlaps(car_boxes, parking_areas)
-    # build and return json with data
-    return jsonify([
-        {
-            'coords': [-75.378855, 6.148160],
-            'free_spots': 13,
-            'total_spots': 15,
-        },
-        {
-            'coords': [-75.378721, 6.148259],
-            'free_spots': 5,
-            'total_spots': 18,
+        car_boxes = clean_boxes(results[0], CAR_CLS_NAMES, CAR_SCORE)
+        car_spots = np.array(source['spots'])
+        overlaps = mrcnn.utils.compute_overlaps(car_spots, car_boxes)
+
+        for car_box in car_boxes:  # Detected cars
+            y1, x1, y2, x2 = car_box
+            cv2.rectangle(frame, (x1, y1), (x2, y2), (255, 0, 0), 3)
+
+        source_spots = {
+            'coords': source['coords'],
+            'total_spots': len(source['spots']),
+            'free_spots': 0
         }
-    ])
+        for car_spot, overlap_areas in zip(car_spots, overlaps):  # Car spots
+            y1, x1, y2, x2 = car_spot
+            center = (int((x1 + x2) / 2), int((y1 + y2) / 2))
+            radius = int((y2 - y1) / 2)
+            free_spot = np.max(overlap_areas) < 0.2
+            color = (0, 255, 0) if free_spot else (0, 0, 255)
+            source_spots['free_spots'] += 1 if free_spot else 0
+            cv2.circle(frame, center, radius, color, 3)
+
+        parking_data.append(source_spots)
+        cv2.imwrite(f"pics/{source['name']}.png", frame)
+
+    return jsonify(parking_data)
 
 
 if __name__ == '__main__':

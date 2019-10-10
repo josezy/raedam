@@ -5,7 +5,7 @@ from detector import load_model, clean_boxes
 
 model = load_model()
 
-cap = cv2.VideoCapture("/Users/joseb/raedam/pics/canada_night.png")
+cap = cv2.VideoCapture("http://75.147.0.206/mjpg/video.mjpg")
 _, frame = cap.read()
 rgb_frame = cv2.cvtColor(frame, cv2.COLOR_BGR2RGB)
 
