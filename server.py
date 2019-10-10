@@ -143,6 +143,9 @@ def zones_data():
             source_spots['free_spots'] += 1 if free_spot else 0
             cv2.circle(frame, center, radius, color, 3)
 
+        assert source_spots['free_spots'] <= source_spots['total_spots'],\
+            f"'free_spots' ({source_spots['free_spots']}) can't never "\
+            f"be greater thatn 'total_spots' ({source_spots['total_spots']})"
         parking_data.append(source_spots)
         cv2.imwrite(f"pics/{source['name']}.png", frame)
 
