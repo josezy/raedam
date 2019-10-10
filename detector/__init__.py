@@ -1,3 +1,5 @@
+import numpy as np
+
 from mrcnn.model import MaskRCNN
 from mrcnn.config import Config
 
@@ -23,3 +25,20 @@ def load_model():
     )
     model.load_weights(WEIGHTS_FILE, by_name=True)
     return model
+
+
+def clean_boxes(r, class_names, score_threshold):
+    boxes = r['rois']
+    class_ids = r['class_ids']
+    scores = r['scores']
+    cleaned_boxes = []
+
+    for i, box in enumerate(boxes):
+        if scores[i] < score_threshold:
+            continue
+
+        cls_name = CLASS_NAMES[class_ids[i]]
+        if cls_name in class_names:
+            cleaned_boxes.append(box)
+
+    return np.array(cleaned_boxes)
