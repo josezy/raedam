@@ -14,9 +14,10 @@ from util import coords_in_radius
 
 CAR_SCORE = 0.8
 CAR_CLS_NAMES = ['car', 'bus', 'truck']
-VIDEO_SOURCES_RADIUS = 500
+VIDEO_SOURCES_RADIUS = 1000
 VIDEO_SOURCES_DATA = [
     {
+        'id': 1,
         'name': "parking_1",
         'coords': [Decimal('-75.378882'), Decimal('6.146590')],  # San Nicolas
         'url': "http://199.48.198.27/mjpg/video.mjpg"
@@ -27,11 +28,13 @@ VIDEO_SOURCES_DATA = [
     #     'url': "http://46.186.121.222:83/GetData.cgi"
     # },
     {
+        'id': 2,
         'name': "parking_river",
         'coords': [Decimal('-75.389125'), Decimal('6.146871')],  # 6ta etapa
         'url': "http://75.147.0.206/mjpg/video.mjpg"
     },
     {
+        'id': 3,
         'name': "good_parking_canada",
         'coords': [Decimal('-75.389356'), Decimal('6.147737')],  # Iglesia
         'url': "http://192.75.71.26/mjpg/video.mjpg"
@@ -90,24 +93,28 @@ def favicon():
 def index():
     return render_template('index.html', **CONFIG)
 
+@app.route('/GetCamLocation', methods=['GET'])
+def cam_location():
+    return jsonify(VIDEO_SOURCES_DATA)
+
 
 @app.route('/zones', methods=['GET'])
 def zones_data():
     lat = Decimal(request.args.get('latitude'))
     lng = Decimal(request.args.get('longitude'))
-
-    print(f"[+] Getting closest cameras to point ({lat}, {lng})")
+    print(f"LATITUDE: {lat}, LONGITUDE: {lng}")
     closest_sources = [
         source for source in VIDEO_SOURCES
+
         if coords_in_radius(
             source['coords'],
             [lng, lat],
             VIDEO_SOURCES_RADIUS
         )
     ][:1]  # Hard limit number of detections
-
+    print(closest_sources)
     assert len(closest_sources) == 1,\
-        'Multiple frame detection not implemented yet'
+        f'Multiple frame detection not implemented yet, there are {closest_sources} zones near'
 
     parking_data = []
     for source in closest_sources:
@@ -130,6 +137,7 @@ def zones_data():
             cv2.rectangle(frame, (x1, y1), (x2, y2), (255, 0, 0), 3)
 
         source_spots = {
+            'id': source['id'],
             'coords': source['coords'],
             'total_spots': len(source['spots']),
             'free_spots': 0
@@ -148,7 +156,8 @@ def zones_data():
             f"be greater thatn 'total_spots' ({source_spots['total_spots']})"
         parking_data.append(source_spots)
         cv2.imwrite(f"pics/{source['name']}.png", frame)
-
+    print("ES ESTE\n")
+    print(jsonify(parking_data))
     return jsonify(parking_data)
 
 

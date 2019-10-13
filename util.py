@@ -49,4 +49,7 @@ def swap_coords(coords):
 def coords_in_radius(coords, center, radius, lnglat=True):
     _coords = swap_coords(coords) if lnglat else coords
     _center = swap_coords(center) if lnglat else center
+    print(f"\nCENTER COORDS {_center}")
+    print(f"\nCOORDS {_coords}")
+    print(f"DISTANCE {geodesic(_coords, _center).meters}")
     return geodesic(_coords, _center).meters < radius

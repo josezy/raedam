@@ -13,64 +13,117 @@
 
 {% block bodyafter %}
 <script>
-var map_loaded = false
-var zones_timer = undefined
-var request_counter = 1
+    var map_loaded = false
+    var zones_timer = undefined
+    var request_counter = 1
 
 
-mapboxgl.accessToken = '{{MAP_API}}'
-var map = new mapboxgl.Map({
-    container: 'map',
-    style: 'mapbox://styles/mapbox/streets-v11',
-    center: [-75.378672, 6.148355],
-    zoom: 18
-})
+    mapboxgl.accessToken = '{{MAP_API}}'
+    var map = new mapboxgl.Map({
+        container: 'map',
+        style: 'mapbox://styles/mapbox/streets-v11',
+        center: [-75.378672, 6.148355],
+        zoom: 18
+    })
+
+    var allPopups = []
+    var currentMarkers = []
+
+    $.getJSON('/GetCamLocation').done(
+        function (cams_location) {
+            var i;
+            for (i = 0; i < cams_location.length; i++) {
+                allPopups.push(new mapboxgl.Popup({ offset: 25 })
+                    .setText('Construction on the Washington Monument began in 1848.'))
+
+                currentMarkers.push(new mapboxgl.Marker()
+                    .setLngLat(cams_location[i].coords).setPopup(allPopups[i])
+                    .addTo(map));
+            }
+        }
+    ).fail(
+        function (response, textStatus, error) {
+            console.log(response, textStatus, error)
+
+        }
+
+    )
+    var MarkersInitilize = false
 
 
-document.addEventListener('DOMContentLoaded', function() {
-    if (navigator.geolocation) {
-        navigator.geolocation.getCurrentPosition(function (position) {
-            map.setCenter([
-                position.coords.longitude,
-                position.coords.latitude
-            ])
-        })
-    } else {
-        alert("Geolocation no disponible")
-    }
-})
+    document.addEventListener('DOMContentLoaded', function () {
+        if (navigator.geolocation) {
+            navigator.geolocation.getCurrentPosition(function (position) {
+                map.setCenter([
+                    position.coords.longitude,
+                    position.coords.latitude
+                ])
+            })
+        } else {
+            alert("Geolocation no disponible")
+        }
+    })
+
+    map.on('load', function () {
+        // map.addSource('spots', {
+        //     type: 'geojson',
+        //     data: {
+        //         "type": "FeatureCollection",
+        //         "features": []
+        //     }
+        // })
+        // map.addLayer({
+        //     id: "free_spots",
+        //     type: "circle",
+        //     source: "spots",
+        //     paint: {
+        //         "circle-color": {type: 'identity', property: 'color'},
+        //         "circle-radius": 5,
+        //         "circle-stroke-width": 1,
+        //         "circle-stroke-color": "#fff"
+        //     }
+        // })
+        map_loaded = true
+        zones_timer = setInterval(fetchZones, 11000)
+        // fetchZones()
 
 
-map.on('load', function () {
-    // map.addSource('spots', {
-    //     type: 'geojson',
-    //     data: {
-    //         "type": "FeatureCollection",
-    //         "features": []
-    //     }
-    // })
-    // map.addLayer({
-    //     id: "free_spots",
-    //     type: "circle",
-    //     source: "spots",
-    //     paint: {
-    //         "circle-color": {type: 'identity', property: 'color'},
-    //         "circle-radius": 5,
-    //         "circle-stroke-width": 1,
-    //         "circle-stroke-color": "#fff"
-    //     }
-    // })
-    map_loaded = true
-    zones_timer = setInterval(fetchZones, {{FETCH_ZONES_INTERVAL}})
-    fetchZones()
-})
+    })
+
+    var geojson = [
+        {
+            type: 'Feature',
+            geometry: {
+                type: 'Point',
+                coordinates: [-75.389356, 6.147737]
+            },
+            properties: {
+                'marker-color': '#3bb2d0',
+                'marker-size': 'large',
+                'marker-symbol': 'rocket'
+            }
+        },
+        {
+            type: 'Feature',
+            geometry: {
+                type: 'Point',
+                coordinates: [6.147737, -75.389356],
+            },
+            properties: {
+                'marker-color': '#3bb2d0',
+                'marker-size': 'large',
+                'marker-symbol': 'rocket'
+            }
+        }
+    ];
 
 
-function fetchZones() {
-    if (!map_loaded) return
+    function fetchZones() {
+        if (!map_loaded) return
 
-    if (++request_counter >= {{MAX_ZONE_REQUESTS}})
-        clearInterval(zones_timer)
+        if (++request_counter >= {{ MAX_ZONE_REQUESTS }
+    })
+    clearInterval(zones_timer)
 
     const map_center = map.getCenter()
     const data = {
@@ -78,35 +131,44 @@ function fetchZones() {
         longitude: map_center.lng
     }
     $.getJSON('/zones', data).done(updateZones).fail(
-        function(response, textStatus, error) {
+        function (response, textStatus, error) {
             console.log(response, textStatus, error)
+
         }
+
     )
 }
 
 
-function updateZones(zones) {
-    console.log('zones', zones)
-    // TODO Update map source/layer with fetched data
+    function updateZones(zones) {
+        console.log('zones', zones[0].free_spots)
+        console.log('PRUEBA', "PRUEBA2")
+        var i;
+        for (i = 0; i < zones.length; i++) {
 
-    // var spot_features = []
-    // spots.forEach(function (spot) {
-    //     spot_features.push({
-    //         "type": "Feature",
-    //         "geometry": {
-    //             "type": "Point",
-    //             "coordinates": spot.coords
-    //         },
-    //         "properties": {
-    //             "color": spot.free ? "#0f0" : "#f00",
-    //         }
-    //     })
-    // })
-    // map.getSource('spots').setData({
-    //     "type": "FeatureCollection",
-    //     "features": spot_features
-    // })
-}
+            allPopups[zones[i].id].setText("FREE SPOTS: " + zones[i].free_spots.toString())
+
+        }
+        // TODO Update map source/layer with fetched data
+
+        // var spot_features = []
+        // spots.forEach(function (spot) {
+        //     spot_features.push({
+        //         "type": "Feature",
+        //         "geometry": {
+        //             "type": "Point",
+        //             "coordinates": spot.coords
+        //         },
+        //         "properties": {
+        //             "color": spot.free ? "#0f0" : "#f00",
+        //         }
+        //     })
+        // })
+        // map.getSource('spots').setData({
+        //     "type": "FeatureCollection",
+        //     "features": spot_features
+        // })
+    }
 
 </script>
 {% endblock %}
