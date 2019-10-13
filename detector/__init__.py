@@ -4,8 +4,10 @@ from mrcnn.model import MaskRCNN
 from mrcnn.config import Config
 
 
-LABELS_FILE = 'detector/coco_labels.txt'
-WEIGHTS_FILE = 'detector/mask_rcnn_coco.h5'  # Not included in repo
+# Replace with trained model name i.e. mask_rcnn_coco
+MODEL_NAME = 'parked_cars'  # Custom model
+LABELS_FILE = f'detector/labels/{MODEL_NAME}.txt'
+WEIGHTS_FILE = f'detector/weights/{MODEL_NAME}.h5'  # Not included in repo
 
 CLASS_NAMES = open(LABELS_FILE).read().strip().split("\n")
 
