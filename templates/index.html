@@ -33,11 +33,13 @@
         function (cams_location) {
             var i;
             for (i = 0; i < cams_location.length; i++) {
-                allPopups.push(new mapboxgl.Popup({ offset: 25 })
-                    .setText('Construction on the Washington Monument began in 1848.'))
-
-                currentMarkers.push(new mapboxgl.Marker()
-                    .setLngLat(cams_location[i].coords).setPopup(allPopups[i])
+                allPopups.push(new mapboxgl.Popup({ offset: 25 }).setHTML('<div>'+
+  '<p>Taken from wikpedia</p>'+
+  '<img src="data:image/png;base64, iVBORw0KGgoAAAANSUhEUgAAAAUA'+
+    'AAAFCAYAAACNbyblAAAAHElEQVQI12P4//8/w38GIAXDIBKE0DHxgljNBAAO'+
+        '9TXL0Y4OHwAAAABJRU5ErkJggg==" alt="Red dot" />'+'</div>'))
+                    //.setText('Construction on the Washington Monument began in 1848.'))
+                currentMarkers.push(new mapboxgl.Marker().setLngLat(cams_location[i].coords).setPopup(allPopups[i])
                     .addTo(map));
             }
         }
@@ -121,33 +123,34 @@
     function fetchZones() {
         if (!map_loaded) return
 
-        if (++request_counter >= {{ MAX_ZONE_REQUESTS }
-    })
-    clearInterval(zones_timer)
+        if (++request_counter >= {{ MAX_ZONE_REQUESTS }})
+            clearInterval(zones_timer)
 
-    const map_center = map.getCenter()
-    const data = {
-        latitude: map_center.lat,
-        longitude: map_center.lng
-    }
-    $.getJSON('/zones', data).done(updateZones).fail(
-        function (response, textStatus, error) {
-            console.log(response, textStatus, error)
-
+        const map_center = map.getCenter()
+        const data = {
+            latitude: map_center.lat,
+            longitude: map_center.lng
         }
+        $.getJSON('/zones', data).done(updateZones).fail(
+            function (response, textStatus, error) {
+                console.log(response, textStatus, error)
 
-    )
-}
+            }
+
+        )
+    }
 
 
     function updateZones(zones) {
-        console.log('zones', zones[0].free_spots)
         console.log('PRUEBA', "PRUEBA2")
         var i;
         for (i = 0; i < zones.length; i++) {
 
-            allPopups[zones[i].id].setText("FREE SPOTS: " + zones[i].free_spots.toString())
-
+            //allPopups[zones[i].id].setText("FREE SPOTS: " + zones[i].free_spots.toString())
+            allPopups[zones[i].id].setHTML('<div>'+
+  '<p>FREE SPOTS: ' + zones[i].free_spots.toString()+'</p>'+
+  '<img src="data:image/jpeg;base64,'+zones[i].image+'" alt="Red dot" />'+'</div>')
+      
         }
         // TODO Update map source/layer with fetched data
 

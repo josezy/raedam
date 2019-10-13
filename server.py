@@ -11,6 +11,7 @@ from decimal import Decimal
 from detector import load_model, clean_boxes
 from util import coords_in_radius
 
+import base64
 
 CAR_SCORE = 0.8
 CAR_CLS_NAMES = ['car', 'bus', 'truck']
@@ -127,7 +128,7 @@ def zones_data():
         rgb_frame = cv2.cvtColor(frame, cv2.COLOR_BGR2RGB)
         with app.graph.as_default():
             results = app.model.detect([rgb_frame], verbose=0)
-
+        print("\n\nIT WORKS \n\n")
         car_boxes = clean_boxes(results[0], CAR_CLS_NAMES, CAR_SCORE)
         car_spots = np.array(source['spots'])
         overlaps = mrcnn.utils.compute_overlaps(car_spots, car_boxes)
@@ -140,7 +141,8 @@ def zones_data():
             'id': source['id'],
             'coords': source['coords'],
             'total_spots': len(source['spots']),
-            'free_spots': 0
+            'free_spots': 0,
+            'image': "asdas"
         }
         for car_spot, overlap_areas in zip(car_spots, overlaps):  # Car spots
             y1, x1, y2, x2 = car_spot
@@ -150,12 +152,21 @@ def zones_data():
             color = (0, 255, 0) if free_spot else (0, 0, 255)
             source_spots['free_spots'] += 1 if free_spot else 0
             cv2.circle(frame, center, radius, color, 3)
-
+            drawframe=cv2.resize(
+                frame.copy(), None, fx=0.25, fy=0.25, interpolation=cv2.INTER_CUBIC
+            )
+            retval, buffer = cv2.imencode('.jpg', drawframe)
+            jpg_as_text = base64.b64encode(buffer)
+            txt=str(jpg_as_text)
+            
+            source_spots['image']=txt[2:-1]
+            
         assert source_spots['free_spots'] <= source_spots['total_spots'],\
             f"'free_spots' ({source_spots['free_spots']}) can't never "\
             f"be greater thatn 'total_spots' ({source_spots['total_spots']})"
         parking_data.append(source_spots)
         cv2.imwrite(f"pics/{source['name']}.png", frame)
+        cv2.imwrite("/home/pdi/ECUADOR/JOSE/raedam/detector/Frame.jpg", frame)
     print("ES ESTE\n")
     print(jsonify(parking_data))
     return jsonify(parking_data)
@@ -163,4 +174,4 @@ def zones_data():
 
 if __name__ == '__main__':
     print("[i] Server up and running...")
-    app.run()
+    app.run(host="192.168.0.33")

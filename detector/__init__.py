@@ -4,8 +4,8 @@ from mrcnn.model import MaskRCNN
 from mrcnn.config import Config
 
 
-LABELS_FILE = 'detector/coco_labels.txt'
-WEIGHTS_FILE = 'detector/mask_rcnn_coco.h5'  # Not included in repo
+LABELS_FILE = 'detector/train2_labels.txt'
+WEIGHTS_FILE = 'detector/Train2.h5'  # Not included in repo
 
 CLASS_NAMES = open(LABELS_FILE).read().strip().split("\n")
 
@@ -35,6 +35,7 @@ def clean_boxes(r, class_names, score_threshold):
 
     for i, box in enumerate(boxes):
         if scores[i] < score_threshold:
+
             continue
 
         cls_name = CLASS_NAMES[class_ids[i]]
