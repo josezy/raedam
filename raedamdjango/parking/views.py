@@ -97,7 +97,8 @@ class Zones(BaseView):
             cam_spots = {
                 'coords': cam.coords,
                 'total_spots': len(cam.spots),
-                'free_spots': 0
+                'free_spots': 0,
+                'frame': cam.last_frame,
             }
             # Car spots
             for car_spot, overlap_areas in zip(car_spots, overlaps):
@@ -111,7 +112,8 @@ class Zones(BaseView):
 
             assert cam_spots['free_spots'] <= cam_spots['total_spots'],\
                 f"'free_spots' ({cam_spots['free_spots']}) can't never "\
-                f"be greater thatn 'total_spots' ({cam_spots['total_spots']})"
+                f"be greater than 'total_spots' ({cam_spots['total_spots']})"
+
             parking_data.append(cam_spots)
             cv2.imwrite(f"{settings.MEDIA_ROOT}/{cam.short_id}.png", frame)
 
