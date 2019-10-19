@@ -1,13 +1,15 @@
+import os
 import numpy as np
 
 from mrcnn.model import MaskRCNN
 from mrcnn.config import Config
 
-
 # Replace with trained model name i.e. mask_rcnn_coco
 MODEL_NAME = 'parked_cars'  # Custom model
-LABELS_FILE = f'detector/labels/{MODEL_NAME}.txt'
-WEIGHTS_FILE = f'detector/weights/{MODEL_NAME}.h5'  # Not included in repo
+
+PATH = os.path.dirname(__file__)
+LABELS_FILE = f'{PATH}/labels/{MODEL_NAME}.txt'
+WEIGHTS_FILE = f'{PATH}/weights/{MODEL_NAME}.h5'  # Not included in repo
 
 CLASS_NAMES = open(LABELS_FILE).read().strip().split("\n")
 

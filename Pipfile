@@ -6,9 +6,9 @@ verify_ssl = true
 [dev-packages]
 ipython = "*"
 ipdb = "*"
+django-extensions = "*"
 
 [packages]
-flask = "*"
 mrcnn = "*"
 numpy = "*"
 scikit-image = "*"
@@ -16,6 +16,8 @@ tensorflow = "==1.13.1"
 keras = "==2.2.4"
 opencv-python = "*"
 geopy = "*"
+django = "*"
+psycopg2-binary = "*"
 
 [requires]
 python_version = "3.7"
