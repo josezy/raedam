@@ -1,4 +1,4 @@
-{% extends 'base.html' %}
+{% extends 'core/base.html' %}
 
 {% block title %}Busca tu celda{% endblock %}
 
@@ -77,7 +77,7 @@ function fetchZones() {
         latitude: map_center.lat,
         longitude: map_center.lng
     }
-    $.getJSON('/zones', data).done(updateZones).fail(
+    $.getJSON('{% url "parking:zones" %}', data).done(updateZones).fail(
         function(response, textStatus, error) {
             console.log(response, textStatus, error)
         }
