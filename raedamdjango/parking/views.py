@@ -17,8 +17,9 @@ from parking.models import ParkingCamera
 from cerebro import load_model, clean_boxes
 
 
-model = load_model()
-graph = tf.get_default_graph()
+if settings.IS_RUNSERVER:
+    model = load_model()
+    graph = tf.get_default_graph()
 
 
 class BaseView(View):
