@@ -1,3 +1,4 @@
+from django.conf import settings
 from django.db import models
 from django.utils.functional import cached_property
 
@@ -14,3 +15,7 @@ class Camera(BaseModel):
     @cached_property
     def coords(self):
         return list(map(lambda x: Decimal(x), self.geopoint.split(',')))
+
+    @cached_property
+    def last_frame(self):
+        return f"{settings.MEDIA_URL}{self.short_id}.png"

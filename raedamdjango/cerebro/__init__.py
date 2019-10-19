@@ -31,7 +31,7 @@ def load_model():
     return model
 
 
-def clean_boxes(r, class_names, score_threshold):
+def clean_boxes(r, class_names=CLASS_NAMES, score_threshold=0.0):
     boxes = r['rois']
     class_ids = r['class_ids']
     scores = r['scores']
