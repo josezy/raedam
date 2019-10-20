@@ -48,24 +48,6 @@ document.addEventListener('DOMContentLoaded', function() {
 
 
 map.on('load', function () {
-    // map.addSource('spots', {
-    //     type: 'geojson',
-    //     data: {
-    //         "type": "FeatureCollection",
-    //         "features": []
-    //     }
-    // })
-    // map.addLayer({
-    //     id: "free_spots",
-    //     type: "circle",
-    //     source: "spots",
-    //     paint: {
-    //         "circle-color": {type: 'identity', property: 'color'},
-    //         "circle-radius": 5,
-    //         "circle-stroke-width": 1,
-    //         "circle-stroke-color": "#fff"
-    //     }
-    // })
     map_loaded = true
     zones_timer = setInterval(fetchZones, {{FETCH_ZONES_INTERVAL}})
     fetchZones()
@@ -83,7 +65,7 @@ function fetchZones() {
         latitude: map_center.lat,
         longitude: map_center.lng
     }
-    $.getJSON('{% url "parking:zones" %}', data).done(updateZones).fail(
+    $.getJSON('{% url "parking:zones" %}', data).done(updateCameras).fail(
         function(response, textStatus, error) {
             console.log(response, textStatus, error)
         }
@@ -91,27 +73,28 @@ function fetchZones() {
 }
 
 
-function updateZones(zones) {
-    console.log('zones', zones)
-    // TODO Update map source/layer with fetched data
+function updateCameras(cams) {
+    console.log('CAMS', cams)
 
-    // var spot_features = []
-    // spots.forEach(function (spot) {
-    //     spot_features.push({
-    //         "type": "Feature",
-    //         "geometry": {
-    //             "type": "Point",
-    //             "coordinates": spot.coords
-    //         },
-    //         "properties": {
-    //             "color": spot.free ? "#0f0" : "#f00",
-    //         }
-    //     })
-    // })
-    // map.getSource('spots').setData({
-    //     "type": "FeatureCollection",
-    //     "features": spot_features
-    // })
+    var cam_features = []
+    cams.forEach(function (cam) {
+        var mrkr_id = 'marker_' + cam.shortid
+        var marker = document.getElementById(mrkr_id)
+        if (!marker) {
+            marker = document.createElement('div')
+            marker.id = mrkr_id
+            marker.className = 'camera_marker'
+            marker_subtitle = document.createElement('div')
+            marker_subtitle.id = 'subtitle_' + mrkr_id
+            marker_subtitle.className = 'marker_subtitle'
+            marker.appendChild(marker_subtitle)
+        }
+        new mapboxgl.Marker(marker).setLngLat(cam.coords).addTo(map)
+
+        marker_subtitle = document.getElementById('subtitle_' + mrkr_id)
+        marker_subtitle.innerText = (cam.total_spots - cam.free_spots) + '/' + cam.total_spots
+        marker.style.backgroundColor = cam.free_spots > 0 ? "#0f04" : "#f004"
+    })
 }
 
 </script>

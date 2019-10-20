@@ -96,6 +96,7 @@ class Zones(BaseView):
                 cv2.rectangle(frame, (x1, y1), (x2, y2), (255, 0, 0), 3)
 
             cam_spots = {
+                'shortid': cam.short_id,
                 'coords': cam.coords,
                 'total_spots': len(cam.spots),
                 'free_spots': 0,
