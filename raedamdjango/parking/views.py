@@ -73,9 +73,18 @@ class Zones(BaseView):
 
         parking_data = []
         for cam in closest_cams:
+            if not cam.spots:
+                parking_data.append({
+                    'error': f'Parking lot {cam.short_id} has no marked spots'
+                })
+                continue
+
             cap = cv2.VideoCapture(cam.url)
             success, frame = cap.read()
             if not success:
+                parking_data.append({
+                    'error': f'Couldnt read frame from camera {cam.short_id}'
+                })
                 continue
 
             print(f"[+] Performing detection for cam '{cam.short_id}'")
