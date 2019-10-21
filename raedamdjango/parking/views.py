@@ -129,6 +129,8 @@ class Zones(BaseView):
                 f"be greater than 'total_spots' ({cam_spots['total_spots']})"
 
             parking_data.append(cam_spots)
-            cv2.imwrite(f"{settings.MEDIA_ROOT}/{cam.short_id}.png", frame)
+            ratio = frame.shape[0] / frame.shape[1]
+            resized = cv2.resize(frame, (640, int(ratio * 640)))
+            cv2.imwrite(f"{settings.MEDIA_ROOT}/{cam.short_id}.png", resized)
 
         return self.render_json(parking_data, safe=False)
