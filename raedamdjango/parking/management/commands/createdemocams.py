@@ -11,6 +11,14 @@ cameras_data = [
         'geopoint': '-75.378811,6.148104',  # Iglesia
         'url': "http://192.75.71.26/mjpg/video.mjpg"
     },
+    {  # Small parking
+        'geopoint': '-75.373503,6.147159',
+        'url': "http://124.41.68.233:81/cgi-bin/camera"
+    },
+    {  # Park parking
+        'geopoint': '-75.373581,6.146292',
+        'url': "http://195.225.70.249/mjpg/video.mjpg"
+    }
 ]
 
 

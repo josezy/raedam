@@ -1,4 +1,5 @@
 import cv2
+import time
 import mrcnn
 import numpy as np
 import tensorflow as tf
@@ -60,7 +61,7 @@ class Zones(BaseView):
         lng = Decimal(request.GET.get('longitude'))
 
         closest_cams = [
-            cam for cam in ParkingCamera.objects.all()
+            cam for cam in ParkingCamera.objects.filter(is_active=True)
             if coords_in_radius(
                 cam.coords,
                 [lng, lat],
@@ -71,11 +72,11 @@ class Zones(BaseView):
         assert len(closest_cams) < 2,\
             'Multiple cameras detection not implemented yet'
 
-        parking_data = []
+        parking_data = [] if closest_cams else {'error': 'No near cameras'}
         for cam in closest_cams:
             if not cam.spots:
                 parking_data.append({
-                    'error': f'Parking lot {cam.short_id} has no marked spots'
+                    'error': f'ParkingCamera {cam.short_id} hasnt marked spots'
                 })
                 continue
 
@@ -87,10 +88,12 @@ class Zones(BaseView):
                 })
                 continue
 
-            print(f"[+] Performing detection for cam '{cam.short_id}'")
             rgb_frame = cv2.cvtColor(frame, cv2.COLOR_BGR2RGB)
+            print(f"[+] Performing detection for cam '{cam.short_id}'")
+            detection_start = time.time()
             with graph.as_default():
                 results = model.detect([rgb_frame], verbose=0)
+            print(f"[!] Detection took {time.time() - detection_start} secs")
 
             car_boxes = clean_boxes(
                 results[0],
