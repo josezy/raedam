@@ -39,7 +39,49 @@
         {% endblock %}
 
         <div class="main-content">
-        {% block main %}{% endblock %}
+            <style> 
+                .head1 { 
+                    font-size:17px; 
+                    margin-left:10px; 
+                    margin-bottom:15px; 
+                } 
+                body { 
+                    margin: 0 auto; 
+                    background-position:center; 
+                    background-size: contain; 
+                } 
+                
+                .menu {    
+                    position: sticky; 
+                    top: 0; 
+                    background-color: whithe; 
+                    padding:10px 0px 10px 0px; 
+                    color:white; 
+                    margin: 0 auto; 
+                    overflow: hidden; 
+                } 
+                .menu a { 
+                    float left; 
+                    color: black; 
+                    text-align: center; 
+                    padding: 14px 16px; 
+                    text-decoration: none; 
+                    font-size: 20px; 
+                } 
+                .menu-log { 
+                    right: auto; 
+                    float: right; 
+                } 
+                
+                .body_sec { 
+                    margin-left:20px; 
+                } 
+            </style>
+            <div class="menu"> 
+                <a href="{% url 'parking:spots' %}">INICIO</a> 
+                <a href="{% url 'parking:manage_cameras' %}">MANAGE CAMERAS</a> 
+            </div>    
+            {% block main %}{% endblock %}
         </div>
 
         {% block footer %}

@@ -49,7 +49,7 @@ MAP_API = (
 )
 FETCH_ZONES_INTERVAL = 12000
 MAX_ZONE_REQUESTS = 10          # Max number of requests on an opened page
-CAMERA_RADIUS = 500             # Radius for looking near cameras [m]
+CAMERA_RADIUS = 5000             # Radius for looking near cameras [m]
 CAR_CLS_NAMES = ['car', 'bus', 'truck']
 CAR_SCORE = 0.8
 
@@ -66,6 +66,8 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
 
     'django_extensions',
+    'debug_toolbar',
+    'crispy_forms',
 
     'core',
     'parking',
@@ -79,6 +81,7 @@ MIDDLEWARE = [
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
+    'debug_toolbar.middleware.DebugToolbarMiddleware',
 ]
 
 ROOT_URLCONF = 'core.urls'
@@ -112,8 +115,8 @@ DATABASES = {
         'ENGINE': 'django.db.backends.postgresql',
         'HOST': 'localhost',
         'PORT': '5432',
-        'USER': 'raedam',
-        'PASSWORD': 'raedam',
+        'USER': 'postgres',
+        'PASSWORD': 'postgres',
         'NAME': 'raedam',
     }
 }
@@ -140,6 +143,7 @@ AUTH_PASSWORD_VALIDATORS = [
 
 # Internationalization
 # https://docs.djangoproject.com/en/2.2/topics/i18n/
+INTERNAL_IPS = ('127.0.0.1',)
 
 LANGUAGE_CODE = 'en-us'
 

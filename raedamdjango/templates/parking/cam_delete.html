@@ -1,0 +1,10 @@
+
+{% extends 'core/base.html' %}
+{% load crispy_forms_tags %}
+{% block main %}
+    <h1>Eliminar</h1>
+    <form action="" method="post">{% csrf_token %}
+    <p>Esta seguro que quiere eliminar la camara? "{{ object.url }}"?</p>
+    <button class="btn btn-danger ml-2" type="submit">Confirmar</button>
+    </form>
+{% endblock  %}

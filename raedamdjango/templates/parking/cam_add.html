@@ -1,0 +1,67 @@
+
+{% extends 'core/base.html' %}
+
+{% load static %}
+
+{% block preloads %}
+<link rel="preload" as="style" href="{% static 'vendor/mapbox-gl-1.4.1/mapbox-gl.css' %}">
+<link rel="preload" as="script" href="{% static 'vendor/mapbox-gl-1.4.1/mapbox-gl.js' %}">
+{% endblock %}
+
+{% block head %}
+<link rel="stylesheet" href="{% static 'vendor/mapbox-gl-1.4.1/mapbox-gl.css' %}" type="text/css">
+<script src="{% static 'vendor/mapbox-gl-1.4.1/mapbox-gl.js' %}" type="text/javascript"></script>
+{% endblock %}
+
+{% block main %}
+
+    <style>
+        #latitude, #longitude {display: inline-block; *display: inline; zoom: 1; vertical-align: top; font-size: 12px;}
+
+        #latitude{
+        
+           
+        }
+        #longitude{
+        
+        }
+    </style>
+    <h1>Add Camera</h1>
+
+    <div id='gepoint' style=" height: 50%; width:50%;">
+        <input id="latitude" type="float" style=" height: 15%; width:50%;" />
+        <input id="longitude" type="float" style=" height: 15%; width:50%;" />
+        <div id='map' style=" height: 75%; width:100%;"></div>
+    </div>
+    <button class="btn btn-success ml-2" type="submit">Guardar</button>
+
+    <script>
+        var map_loaded = false
+        mapboxgl.accessToken = '{{MAP_API}}'
+        var map = new mapboxgl.Map({
+            container: 'map',
+            style: 'mapbox://styles/mapbox/streets-v11',
+            center: [-75.378672, 6.148355],
+            zoom: 18
+        })
+
+
+        document.addEventListener('DOMContentLoaded', function() {
+            if (navigator.geolocation) {
+                navigator.geolocation.getCurrentPosition(function (position) {
+                    map.setCenter([
+                        position.coords.longitude,
+                        position.coords.latitude
+                    ])
+                })
+            } else {
+                alert("Geolocation no disponible")
+            }
+        })
+
+
+        map.on('load', function () {
+            map_loaded = true
+        })
+    </script>
+{% endblock  %}
