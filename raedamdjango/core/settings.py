@@ -30,6 +30,7 @@ DEBUG = True
 IS_RUNSERVER = 'runserver' in sys.argv
 IS_TEST = 'test' in sys.argv
 IS_MIGRATE = 'migrate' in sys.argv
+ENABLE_DEBUG_TOOLBAR = True
 
 ALLOWED_HOSTS = []
 TEMPLATES_DIR = os.path.join(BASE_DIR, 'templates')
@@ -157,3 +158,13 @@ USE_TZ = True
 
 STATIC_URL = '/static/'
 MEDIA_URL = '/media/'
+
+# Debug toolbar
+if ENABLE_DEBUG_TOOLBAR:
+    INSTALLED_APPS = [
+        'debug_toolbar',
+    ] + INSTALLED_APPS
+    MIDDLEWARE = MIDDLEWARE + [
+        'debug_toolbar.middleware.DebugToolbarMiddleware',
+    ]
+    INTERNAL_IPS = ['127.0.0.1']
