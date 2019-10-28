@@ -5,7 +5,7 @@ from mrcnn.model import MaskRCNN
 from mrcnn.config import Config
 
 # Replace with trained model name i.e. mask_rcnn_coco
-MODEL_NAME = 'parked_cars'  # Custom model
+MODEL_NAME = 'parked_cars'  # Custom model (parked_cars, mask_rcnn_coco)
 
 PATH = os.path.dirname(__file__)
 LABELS_FILE = f'{PATH}/labels/{MODEL_NAME}.txt'
@@ -25,7 +25,7 @@ def load_model():
     model = MaskRCNN(
         mode="inference",
         config=SimpleConfig(),
-        model_dir='./model_logs'
+        model_dir=f'{PATH}/model_logs'
     )
     model.load_weights(WEIGHTS_FILE, by_name=True)
     return model

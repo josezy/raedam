@@ -30,6 +30,7 @@ DEBUG = True
 IS_RUNSERVER = 'runserver' in sys.argv
 IS_TEST = 'test' in sys.argv
 IS_MIGRATE = 'migrate' in sys.argv
+ENABLE_DEBUG_TOOLBAR = True
 
 ALLOWED_HOSTS = []
 TEMPLATES_DIR = os.path.join(BASE_DIR, 'templates')
@@ -47,9 +48,9 @@ MAP_API = (
     "pk.eyJ1Ijoiam9zZXp5IiwiYSI6ImNqd3ZmdGFmbzA4dGQ"
     "0OW41em5reDU3cmMifQ.5Ab2UzBgSWEoRgjxN9fMhg"
 )
-FETCH_ZONES_INTERVAL = 12000
-MAX_ZONE_REQUESTS = 10          # Max number of requests on an opened page
-CAMERA_RADIUS = 5000             # Radius for looking near cameras [m]
+FETCH_ZONES_INTERVAL = 20000
+MAX_ZONE_REQUESTS = 7           # Max number of requests on an opened page
+CAMERA_RADIUS = 500             # Radius for looking near cameras [m]
 CAR_CLS_NAMES = ['car', 'bus', 'truck']
 CAR_SCORE = 0.8
 
@@ -158,3 +159,13 @@ USE_TZ = True
 
 STATIC_URL = '/static/'
 MEDIA_URL = '/media/'
+
+# Debug toolbar
+if ENABLE_DEBUG_TOOLBAR:
+    INSTALLED_APPS = [
+        'debug_toolbar',
+    ] + INSTALLED_APPS
+    MIDDLEWARE = MIDDLEWARE + [
+        'debug_toolbar.middleware.DebugToolbarMiddleware',
+    ]
+    INTERNAL_IPS = ['127.0.0.1']

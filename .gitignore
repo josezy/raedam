@@ -2,5 +2,5 @@
 .DS_Store
 *.h5
 pics/
-.pyc
+*.pyc
 data/

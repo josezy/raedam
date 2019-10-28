@@ -139,7 +139,7 @@ class Zones(BaseView):
         lat = Decimal(request.GET.get('latitude'))
         lng = Decimal(request.GET.get('longitude'))
         closest_cams = [
-            cam for cam in ParkingCamera.objects.all()
+            cam for cam in ParkingCamera.objects.filter(is_active=True)
             if coords_in_radius(
                 cam.coords,
                 [lng, lat],
@@ -153,12 +153,20 @@ class Zones(BaseView):
         parking_data = []
 
         for cam in closest_cams:
+            if not cam.spots:
+                parking_data.append({
+                    'error': f'ParkingCamera {cam.short_id} hasnt marked spots'
+                })
+                continue
+
             cap = cv2.VideoCapture(cam.url)
             success, frame = cap.read()
             if not success:
+                parking_data.append({
+                    'error': f'Couldnt read frame from camera {cam.short_id}'
+                })
                 continue
 
-            print(f"[+] Performing detection for cam '{cam.short_id}'")
             rgb_frame = cv2.cvtColor(frame, cv2.COLOR_BGR2RGB)
             cam_spots = {
                 'shortid': cam.short_id,
@@ -189,6 +197,7 @@ class Zones(BaseView):
             rgb_frame = cv2.cvtColor(frame, cv2.COLOR_BGR2RGB)
             with graph.as_default():
                 results = model.detect([rgb_frame], verbose=0)
+            print(f"[!] Detection took {time.time() - detection_start} secs")
 
             car_boxes = clean_boxes(
                 results[0],

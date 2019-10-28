@@ -69,9 +69,10 @@ class BaseModel(models.Model):
 
 
 class Camera(BaseModel):
-    url = models.URLField()
+    url = models.URLField(unique=True)
     # Always use the format 'lon.gitude,lat.itude'
     geopoint = models.CharField(max_length=100)
+    is_active = models.BooleanField(default=True)
 
     @cached_property
     def coords(self):
