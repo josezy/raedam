@@ -67,6 +67,7 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
 
     'django_extensions',
+    'crispy_forms',
 
     'core',
     'parking',
@@ -102,6 +103,8 @@ TEMPLATES = [
 ]
 
 WSGI_APPLICATION = 'core.wsgi.application'
+
+CRISPY_TEMPLATE_PACK = 'bootstrap4'
 
 ###############################################################################
 # Database
