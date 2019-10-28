@@ -14,8 +14,7 @@
 {% endblock %}
 
 {% block main %}
-
-<div id='map' style=" height: 100%; width:100%;"></div>
+<div id='map' style="height:100%; width:100%;"></div>
 {% endblock %}
 
 {% block bodyafter %}
@@ -79,18 +78,6 @@ function updateCameras(cams) {
 
     var cam_features = []
     cams.forEach(function (cam) {
-
-        var pop_id = 'popup_' + cam.shortid
-        var popup = document.getElementById(pop_id)
-        if (!popup) {
-            popup = document.createElement('div')
-            popup.id = pop_id
-            popup.className = 'camera_popup'
-        }
-        var popup = new mapboxgl.Popup({ offset: 25 }).setHTML('<div>'+
-  '<p>FREE SPOTS: ' + cam.free_spots.toString()+'</p>'+
-  '<img src="data:image/jpeg;base64,'+cam.frame+'" alt="DETECTION" />'+'</div>');
-
         var mrkr_id = 'marker_' + cam.shortid
         var marker = document.getElementById(mrkr_id)
         if (!marker) {
@@ -102,7 +89,7 @@ function updateCameras(cams) {
             marker_subtitle.className = 'marker_subtitle'
             marker.appendChild(marker_subtitle)
         }
-        new mapboxgl.Marker(marker).setLngLat(cam.coords).setPopup(popup).addTo(map)
+        new mapboxgl.Marker(marker).setLngLat(cam.coords).addTo(map)
 
         marker_subtitle = document.getElementById('subtitle_' + mrkr_id)
         marker_subtitle.innerText = (cam.total_spots - cam.free_spots) + '/' + cam.total_spots
