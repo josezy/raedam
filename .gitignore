@@ -4,3 +4,5 @@
 pics/
 *.pyc
 data/
+__pycache__/
+env/secrets.env

@@ -13,24 +13,31 @@ https://docs.djangoproject.com/en/2.2/ref/settings/
 import os
 import sys
 
+from core.system import (
+    PLACEHOLDER_FOR_SECRET,
+    load_env_settings,
+)
+
 # Build paths inside the project like this: os.path.join(BASE_DIR, ...)
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 REPO_DIR = os.path.dirname(BASE_DIR)
 DATA_DIR = os.path.abspath(os.path.join(REPO_DIR, 'data'))
 MEDIA_DIR = os.path.abspath(os.path.join(DATA_DIR, 'media'))
+ENV_DIR = os.path.join(REPO_DIR, 'env')
+ENV_SECRETS_FILE = os.path.join(ENV_DIR, 'secrets.env')
 
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/2.2/howto/deployment/checklist/
 
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = 'wjr@pyn6$5bc2uwd=n661u!+!7!c@tdk7j5nk%+t3lyyz85!vm'
+SECRET_KEY = PLACEHOLDER_FOR_SECRET
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
+DEBUG = False
 IS_RUNSERVER = 'runserver' in sys.argv
 IS_TEST = 'test' in sys.argv
 IS_MIGRATE = 'migrate' in sys.argv
-ENABLE_DEBUG_TOOLBAR = True
+ENABLE_DEBUG_TOOLBAR = False
 
 ALLOWED_HOSTS = []
 TEMPLATES_DIR = os.path.join(BASE_DIR, 'templates')
@@ -39,20 +46,52 @@ STATIC_ROOT = os.path.join(DATA_DIR, 'static')
 MEDIA_ROOT = os.path.join(DATA_DIR, 'media')
 
 
+# Don't change values here, only set these values in your env/secrets.env file
+POSTGRES_HOST = '127.0.0.1'
+POSTGRES_PORT = 5432
+POSTGRES_DB = 'postgres'
+POSTGRES_USER = 'postgres'
+POSTGRES_PASSWORD = PLACEHOLDER_FOR_SECRET
+
+
 ###############################################################################
-# App settings / keys
+# App settings
 ###############################################################################
 
 # parking
-MAP_API = (
-    "pk.eyJ1Ijoiam9zZXp5IiwiYSI6ImNqd3ZmdGFmbzA4dGQ"
-    "0OW41em5reDU3cmMifQ.5Ab2UzBgSWEoRgjxN9fMhg"
-)
+MAP_API = PLACEHOLDER_FOR_SECRET
 FETCH_ZONES_INTERVAL = 20000
 MAX_ZONE_REQUESTS = 7           # Max number of requests on an opened page
 CAMERA_RADIUS = 500             # Radius for looking near cameras [m]
 CAR_CLS_NAMES = ['car', 'bus', 'truck']
 CAR_SCORE = 0.8
+
+
+# !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+# Load Settings Overrides from Environment Config Files
+# !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+
+# settings defined above in this file (settings.py)
+SETTINGS_DEFAULTS = load_env_settings(env=globals())
+
+# settings set via env/secrets.env
+ENV_SECRETS = load_env_settings(dotenv_path=ENV_SECRETS_FILE, defaults=globals())
+globals().update(ENV_SECRETS)
+
+# settings set via environemtn variables
+ENV_OVERRIDES = load_env_settings(env=dict(os.environ), defaults=globals())
+globals().update(ENV_OVERRIDES)
+
+
+SETTINGS_SOURCES = {
+    'settings.py': SETTINGS_DEFAULTS,
+    ENV_SECRETS_FILE: ENV_SECRETS,
+    'os.environ': ENV_OVERRIDES,
+}
+# To track down where a specific setting is being imported from:
+# print('Setting sources: \n{SETTINGS_SOURCES}')
+# print(config.system.get_setting_source(SETTING_NAME))
+
 
 ###############################################################################
 # Application definition
@@ -114,11 +153,11 @@ CRISPY_TEMPLATE_PACK = 'bootstrap4'
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.postgresql',
-        'HOST': 'localhost',
-        'PORT': '5432',
-        'USER': 'postgres',
-        'PASSWORD': 'postgres',
-        'NAME': 'raedam',
+        'HOST': POSTGRES_HOST,
+        'PORT': POSTGRES_PORT,
+        'USER': POSTGRES_USER,
+        'PASSWORD': POSTGRES_PASSWORD,
+        'NAME': POSTGRES_DB,
     }
 }
 
