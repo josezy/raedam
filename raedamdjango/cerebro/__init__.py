@@ -5,7 +5,7 @@ from mrcnn.model import MaskRCNN
 from mrcnn.config import Config
 
 # Replace with trained model name i.e. mask_rcnn_coco
-MODEL_NAME = 'mask_rcnn_coco'  # Custom model (parked_cars, mask_rcnn_coco)
+MODEL_NAME = 'parked_cars'  # Custom model (parked_cars, mask_rcnn_coco)
 
 PATH = os.path.dirname(__file__)
 LABELS_FILE = f'{PATH}/labels/{MODEL_NAME}.txt'

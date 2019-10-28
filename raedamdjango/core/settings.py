@@ -47,8 +47,8 @@ MAP_API = (
     "pk.eyJ1Ijoiam9zZXp5IiwiYSI6ImNqd3ZmdGFmbzA4dGQ"
     "0OW41em5reDU3cmMifQ.5Ab2UzBgSWEoRgjxN9fMhg"
 )
-FETCH_ZONES_INTERVAL = 12000
-MAX_ZONE_REQUESTS = 10          # Max number of requests on an opened page
+FETCH_ZONES_INTERVAL = 20000
+MAX_ZONE_REQUESTS = 7           # Max number of requests on an opened page
 CAMERA_RADIUS = 500             # Radius for looking near cameras [m]
 CAR_CLS_NAMES = ['car', 'bus', 'truck']
 CAR_SCORE = 0.8
