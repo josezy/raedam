@@ -19,6 +19,7 @@ geopy = "*"
 django = "*"
 psycopg2-binary = "*"
 numpy = "==1.16.4"
+django-crispy-forms = "*"
 
 [requires]
 python_version = "3.7"
