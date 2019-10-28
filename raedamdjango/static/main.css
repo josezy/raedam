@@ -42,3 +42,11 @@ footer {
     right: -50%;
     text-align: center;
 }
+
+.mapboxgl-popup {
+    max-width: 100% !important; /* This may cause future problems */
+}
+
+.mapboxgl-popup-close-button {
+    background-color: white;
+}
