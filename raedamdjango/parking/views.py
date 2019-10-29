@@ -10,6 +10,8 @@ from django.views import View
 from django.shortcuts import render
 from django.http import JsonResponse
 
+from tenant_schemas.utils import schema_context
+
 from typing import Dict, Any
 from decimal import Decimal
 
@@ -61,14 +63,15 @@ class Zones(BaseView):
         lat = Decimal(request.GET.get('latitude'))
         lng = Decimal(request.GET.get('longitude'))
 
-        closest_cams = [
-            cam for cam in ParkingCamera.objects.filter(is_active=True)
-            if coords_in_radius(
-                cam.coords,
-                [lng, lat],
-                settings.CAMERA_RADIUS
-            )
-        ][:1]  # Hard limit number of detections
+        with schema_context(request.schema_name):
+            closest_cams = [
+                cam for cam in ParkingCamera.objects.filter(is_active=True)
+                if coords_in_radius(
+                    cam.coords,
+                    [lng, lat],
+                    settings.CAMERA_RADIUS
+                )
+            ][:1]  # Hard limit number of detections
 
         assert len(closest_cams) < 2,\
             'Multiple cameras detection not implemented yet'
