@@ -27,6 +27,7 @@ class BaseView(View):
     def global_context(self, request=None):
         return {
             'DEBUG': settings.DEBUG,
+            'SCHEMA_NAME': connection.schema_name,
             'view': f'{self.__module__}.{self.__class__.__name__}',
             'sql_queries': len(connection.queries),
         }

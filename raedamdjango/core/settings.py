@@ -212,6 +212,11 @@ STATIC_URL = '/static/'
 MEDIA_URL = '/media/'
 
 # Debug toolbar
+DEBUG_TOOLBAR_CONFIG = {
+    'SHOW_TOOLBAR_CALLBACK': lambda request:
+        request.user.is_authenticated and request.user.debug_toolbar,
+}
+
 if ENABLE_DEBUG_TOOLBAR:
     INSTALLED_APPS = [
         'debug_toolbar',
