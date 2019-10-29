@@ -24,7 +24,7 @@ from parking.models import ParkingCamera
 '''from cerebro import load_model, clean_boxes
 
 
-if settings.IS_RUNSERVER:
+if settings.ENABLE_DETECTOR and settings.IS_RUNSERVER:
     model = load_model()
     graph = tf.get_default_graph()
 

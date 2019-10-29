@@ -65,6 +65,7 @@ MAX_ZONE_REQUESTS = 7           # Max number of requests on an opened page
 CAMERA_RADIUS = 500             # Radius for looking near cameras [m]
 CAR_CLS_NAMES = ['car', 'bus', 'truck']
 CAR_SCORE = 0.8
+ENABLE_DETECTOR = True
 
 
 # !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
