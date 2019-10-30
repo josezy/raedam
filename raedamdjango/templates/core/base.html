@@ -31,17 +31,19 @@
     </head>
 
     <body>
-        {% block beforebody %}
-        {% endblock %}
+        <div class="body-container d-flex flex-column">
+            {% block navbar %}
+                {% include 'core/navigation.html' %}
+            {% endblock %}
 
-        <div class="main-content">
-        {% block main %}{% endblock %}
+            <main>{% block main %}{% endblock %}</main>
+
+            {% block footer %}
+                <footer class="d-flex">
+                    <div class="m-auto">Ingeniería Tucano © 2020</div>
+                </footer>
+            {% endblock %}
         </div>
-
-        {% block footer %}
-        <footer class="d-flex"><div class="m-auto">Ingeniería Tucano © 2020</div></footer>
-        {% endblock %}
-
         {% block bodyafter %}
         {% endblock %}
     </body>
