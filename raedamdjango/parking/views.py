@@ -63,11 +63,15 @@ def remove_zone(request):
 
 def add_new_zone(request):
 
-    id_cam=request.GET.get('id_cam')
-    x = request.GET.get('x')
-    y = request.GET.get('y')
-    width = request.GET.get('width')
-    height = request.GET.get('height')
+    SPOT_DATA=json.loads(request.GET.get('SPOT_DATA'))
+    print("\n")
+    print(SPOT_DATA)
+    print("\n")
+    id_cam=SPOT_DATA.id_cam
+    x = SPOT_DATA.x
+    y = SPOT_DATA.y
+    width = SPOT_DATA.width
+    height = SPOT_DATA.height
     variable1= {
             'id_cam': id_cam,
             'x':x,
@@ -76,6 +80,7 @@ def add_new_zone(request):
             'height':height,
             'spots':[],
         }
+    
     try:
         camera_of_spots = ParkingCamera.objects.get(pk=id_cam)
     except (KeyError, ParkingCamera.DoesNotExist):

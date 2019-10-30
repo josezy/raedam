@@ -132,7 +132,7 @@
             SPOT_DATA.height
         ])
         if(Math.abs(SPOT_DATA.width) > 0 && Math.abs(SPOT_DATA.height) > 0){
-            $.getJSON('/parking/add_new_zone', SPOT_DATA)
+            $.getJSON("{% url 'parking:add_new_zone' %}", SPOT_DATA)
             .done(function (response) {
                 var listItem = document.createElement("li")
                 listItem.textContent = SPOT_DATA.spots[SPOT_DATA.spots.length-1]
@@ -158,7 +158,7 @@
             SPOT_DATA.spots = new_spots
             SPOT_DATA_CONTAINER.SPOT_DATA = JSON.stringify(SPOT_DATA)
 
-            $.getJSON('/parking/remove_zone', SPOT_DATA_CONTAINER)
+            $.getJSON("{% url 'parking:remove_zone' %}", SPOT_DATA_CONTAINER)
             .done(function (response) {
                 console.log("response", response)
                 ul.removeChild(ul.childNodes[ul_selection+1])
