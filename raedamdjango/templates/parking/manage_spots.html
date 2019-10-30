@@ -2,272 +2,265 @@
 
 {% block main %}
 <style>
-h1 {
-    font-family: sans-serif;
-    font-size: 64px;
-    color: #CCC;
-    padding: 5px;
-    margin: 5px;
-}
-ul {
-    padding: 0;
-    margin: 10px;
-    overflow-y:scroll;
-    height: 400px;
-}
-li:focus {
-    
-  background: lightgreen;
-}
-li {
-    font-family: sans-serif;
-    background-color:gold;
-    float: left;
-    clear: both;
-    padding: 5px;
-    list-style-type: none;
-    margin: 10px;
-    border-radius: 5px;
-}
+    h1 {
+        font-family: sans-serif;
+        font-size: 64px;
+        color: #CCC;
+        padding: 5px;
+        margin: 5px;
+    }
+    ul {
+        padding: 0;
+        margin: 10px;
+        overflow-y: scroll;
+        height: 400px;
+    }
+    li:focus {
+        background: lightgreen;
+    }
+    li {
+        font-family: sans-serif;
+        background-color: gold;
+        float: left;
+        clear: both;
+        padding: 5px;
+        list-style-type: none;
+        margin: 10px;
+        border-radius: 5px;
+    }
+    #canvas_container, #menu_container {
+        display: inline-block;
+        *display: inline;
+        zoom: 1;
+        vertical-align: top;
+        font-size: 12px;
+    }
+    .img {
+        position: absolute;
+        z-index: 1;
+        border-radius: 20px;
+    }
+    #canvas_container {
+        display:inline-block;
+        width:800px; 
+        height:400px;
+        margin: 0 auto; 
+        background: black; 
+        position:relative; 
+        border:0px solid black; 
+        border-radius: 20px; 
+        box-shadow: 0 5px 50px #333
+    }
+    #menu_container{
 
-* {margin: 0; padding: 0;}
-#canvas_container, #menu_container {display: inline-block; *display: inline; zoom: 1; vertical-align: top; font-size: 12px;}
-
-
-body{}
-.img{position:absolute;z-index:1;
-    border-radius: 20px; }
-
-#canvas_container {
-    display:inline-block;
-    width:800px; 
-    height:400px;
-    margin: 0 auto; 
-    background: black; 
-    position:relative; 
-    border:0px solid black; 
-    border-radius: 20px; 
-    box-shadow: 0 5px 50px #333
-}
-#menu_container{
-
-    border: 3px solid green;
-    width:25%; 
-}
-#myCanvas{
-    position:relative;
-    z-index:20;
-}
-
-#main_container {height: 100px; width:100%; font-size: 0;}
-#add_spot_button, #remove_spot_button {display: inline-block; *display: inline; zoom: 1; vertical-align: top; font-size: 12px;}
-
-#add_spot_button{
-
-  margin: auto;
-  width: 45%;
-  border: 3px solid green;
-  padding: 10px;
-}
-#remove_spot_button{
-
-margin: auto;
-width: 45%;
-border: 3px solid green;
-padding: 10px;
-}
+        border: 3px solid green;
+        width:25%; 
+    }
+    #myCanvas{
+        position:relative;
+        z-index:20;
+    }
+    #main_container {
+        height: 100px;
+        width:100%;
+        font-size: 0;
+    }
+    #add_spot_button, #remove_spot_button {
+        display: inline-block;
+        *display: inline;
+        zoom: 1;
+        vertical-align: top;
+        font-size: 12px;
+    }
+    #add_spot_button {
+        margin: auto;
+        width: 45%;
+        border: 3px solid green;
+        padding: 10px;
+    }
+    #remove_spot_button {
+        margin: auto;
+        width: 45%;
+        border: 3px solid green;
+        padding: 10px;
+    }
 </style>
 
 <div id="canvas_container">
     <img class="img" id="test" width="800" height="400" src="{{ object.url }}" />
-    <canvas  id="myCanvas" width="800" height="400">
-            Your browser does not support the HTML5 canvas tag.</canvas>
+    <canvas id="myCanvas" width="800" height="400">
+        Your browser does not support the HTML5 canvas tag.
+    </canvas>
 </div>
 <div id="menu_container">
-    <ul id='ul_list'>
-
-    </ul>
+    <ul id='ul_list'></ul>
 </div>
 <button id="add_spot_button" type="button" >Add new spot!</button>
 <button id="remove_spot_button" type="button" >Remove selected spot!</button>
 
 
 <script>
-    
-    
-    SPOT_DATA={
-        id_cam:"{{ object.id }}",
-        x:0,
-        y:0,
-        width:0,
-        height:0,
-        spots:[]
+    SPOT_DATA = {
+        id_cam: "{{ object.id }}",
+        x: 0,
+        y: 0,
+        width: 0,
+        height: 0,
+        spots: []
     }
-    SPOT_DATA_CONTAINER={
-        SPOT_DATA:SPOT_DATA
-    }
+    SPOT_DATA_CONTAINER = {SPOT_DATA}
 
-    var add_spot_button = document.getElementById("add_spot_button");
     //ADD NEW ZONE LISTENEER
-    add_spot_button.onclick=function(e){
+    var add_spot_button = document.getElementById("add_spot_button")
+    add_spot_button.onclick = function(e){
 
-        SPOT_DATA.width=Math.abs(endX-initX);
-        SPOT_DATA.height=Math.abs(endY-initY);
+        SPOT_DATA.width = Math.abs(endX-initX)
+        SPOT_DATA.height = Math.abs(endY-initY)
 
-        if(endX-initX<0){
-            initX=endX;
+        if(endX - initX < 0){
+            initX = endX
         }
-        if(endY-initY<0){
-            initY=endY;
+        if(endY - initY < 0){
+            initY = endY
         }
-        SPOT_DATA.x=initX;
-        SPOT_DATA.y=initY;
-        SPOT_DATA.spots.push([SPOT_DATA.x,SPOT_DATA.y,SPOT_DATA.width,SPOT_DATA.height]);
-        if(Math.abs(SPOT_DATA.width)>0 && Math.abs(SPOT_DATA.height)>0){
+        SPOT_DATA.x = initX
+        SPOT_DATA.y = initY
+        SPOT_DATA.spots.push([
+            SPOT_DATA.x,
+            SPOT_DATA.y,
+            SPOT_DATA.width,
+            SPOT_DATA.height
+        ])
+        if(Math.abs(SPOT_DATA.width) > 0 && Math.abs(SPOT_DATA.height) > 0){
             $.getJSON('/parking/add_new_zone', SPOT_DATA)
-            .done(
-                function (response) {
-
-                    var listItem = document.createElement("li");
-                    listItem.textContent = SPOT_DATA.spots[SPOT_DATA.spots.length-1];
-                    listItem.tabIndex="1"
-                    ul.appendChild(listItem);
-                    draw_spots(-1);
-                }
-            ).fail(
-                function (response, textStatus, error) {
-                    console.log(response, textStatus, error)
-
-                }
-
-            )
+            .done(function (response) {
+                var listItem = document.createElement("li")
+                listItem.textContent = SPOT_DATA.spots[SPOT_DATA.spots.length-1]
+                listItem.tabIndex="1"
+                ul.appendChild(listItem)
+                draw_spots(-1)
+            })
+            .fail(function (response, textStatus, error) {
+                console.log(response, textStatus, error)
+            })
         }
     }
-    var remove_spot_button = document.getElementById("remove_spot_button");
+
     //REMOVE ZONE LISTENEER
-    remove_spot_button.onclick=function(e){
-        
-        if(ul_selection!=-1){
-            var new_spots=[]
+    var remove_spot_button = document.getElementById("remove_spot_button")
+    remove_spot_button.onclick = function(e){
+        if(ul_selection != -1){
+            var new_spots = []
             for (var i = 0; i < SPOT_DATA.spots.length; i++) {
-                if(i!=ul_selection)
+                if(i != ul_selection)
                     new_spots.push(SPOT_DATA.spots[i])
             }
-            SPOT_DATA.spots=new_spots;
-            SPOT_DATA_CONTAINER.SPOT_DATA=JSON.stringify(SPOT_DATA);
+            SPOT_DATA.spots = new_spots
+            SPOT_DATA_CONTAINER.SPOT_DATA = JSON.stringify(SPOT_DATA)
 
             $.getJSON('/parking/remove_zone', SPOT_DATA_CONTAINER)
-            .done(
-                function (response) {
-                    console.log("response")
-                    console.log(response)
-
-                    ul.removeChild(ul.childNodes[ul_selection+1])
-                    draw_spots(-1);
-
-                }
-            ).fail(
-                function (response, textStatus, error) {
-                    console.log(response, textStatus, error)
-
-                }
-
-            )
-            
+            .done(function (response) {
+                console.log("response", response)
+                ul.removeChild(ul.childNodes[ul_selection+1])
+                draw_spots(-1)
+            })
+            .fail(function (response, textStatus, error) {
+                console.log(response, textStatus, error)
+            })
         }
-        
     }
 
     //CANVAS INIT
-    var c = document.getElementById("myCanvas");
-    var ctx = c.getContext("2d");
-    ctx.beginPath();//ADD THIS LINE!<<<<<<<<<<<<<
+    var canvas = document.getElementById("myCanvas")
+    var ctx = canvas.getContext("2d")
+    ctx.beginPath()
     
     //USEFUL VARIABLES INIT
-    var initX=0;
-    var initY=0;
-    var endX=0;
-    var endY=0;
-    var isMouseDown=false;
+    var initX = 0
+    var initY = 0
+    var endX = 0
+    var endY = 0
+    var isMouseDown = false
 
-    c.addEventListener('mousedown', function(e){
-        initX=e.clientX;
-        initY=e.clientY;
-        isMouseDown=true;
-    });
+    canvas.addEventListener('mousedown', function(e){
+        initX = e.offsetX
+        initY = e.offsetY
+        isMouseDown = true
+    })
 
-    c.addEventListener('mouseup', function(e){
-        isMouseDown=false;       
-        
-    });
+    canvas.addEventListener('mouseup', function(e){
+        isMouseDown = false
+    })
 
-    c.addEventListener('mousemove', function(e){
-        if(isMouseDown){
+    canvas.addEventListener('mousemove', function(e){
+        if (isMouseDown) {
+            endX = e.offsetX
+            endY = e.offsetY
 
-            endX=e.clientX;
-            endY=e.clientY;
-
-            ctx.clearRect(0, 0, c.width, c.height);
+            ctx.clearRect(0, 0, canvas.width, canvas.height)
             draw_spots(-1)
-            ctx.beginPath();//ADD THIS LINE!<<<<<<<<<<<<<
+            ctx.beginPath()
 
-            ctx.strokeStyle = 'red';
-            ctx.lineWidth = 5;
-            ctx.rect(initX, initY, endX-initX, endY-initY);
-            ctx.stroke();
+            ctx.strokeStyle = 'red'
+            ctx.lineWidth = 5
+            ctx.rect(initX, initY, endX - initX, endY - initY)
+            ctx.stroke()
         }
-    });
+    })
 
-    SPOT_DATA.spots={{ object.spots }}
+    SPOT_DATA.spots = {{ object.spots }}
     function draw_spots(selection){
 
-        ctx.clearRect(0, 0, c.width, c.height);
-        if(selection==-1){
-            var i;
+        ctx.clearRect(0, 0, canvas.width, canvas.height)
+        if (selection == -1) {
+            var i
             for (i = 0; i < SPOT_DATA.spots.length; i++) {
-
-                ctx.beginPath();//ADD THIS LINE!<<<<<<<<<<<<<
-                
-                ctx.strokeStyle = 'black';
-                ctx.lineWidth = 3;
-                ctx.rect(SPOT_DATA.spots[i][0], SPOT_DATA.spots[i][1], SPOT_DATA.spots[i][2], SPOT_DATA.spots[i][3]);
-                ctx.stroke();
+                ctx.beginPath()
+                ctx.strokeStyle = 'black'
+                ctx.lineWidth = 3
+                ctx.rect(
+                    SPOT_DATA.spots[i][0],
+                    SPOT_DATA.spots[i][1],
+                    SPOT_DATA.spots[i][2],
+                    SPOT_DATA.spots[i][3]
+                )
+                ctx.stroke()
             }
-        }else{
+        } else {
             for (i = 0; i < SPOT_DATA.spots.length; i++) {
-                ctx.beginPath();//ADD THIS LINE!<<<<<<<<<<<<<
-                if(i==selection){
-                    ctx.strokeStyle = 'red';
-                    ctx.lineWidth = 8;
-                }else{
-                    ctx.strokeStyle = 'black';
-                    ctx.lineWidth = 3;
+                ctx.beginPath()
+                if (i == selection) {
+                    ctx.strokeStyle = 'red'
+                    ctx.lineWidth = 8
+                } else {
+                    ctx.strokeStyle = 'black'
+                    ctx.lineWidth = 3
                 }
-                ctx.rect(SPOT_DATA.spots[i][0], SPOT_DATA.spots[i][1], SPOT_DATA.spots[i][2], SPOT_DATA.spots[i][3]);
-                ctx.stroke();
+                ctx.rect(
+                    SPOT_DATA.spots[i][0],
+                    SPOT_DATA.spots[i][1],
+                    SPOT_DATA.spots[i][2],
+                    SPOT_DATA.spots[i][3]
+                )
+                ctx.stroke()
             }
         }
-        
     }
-    draw_spots(-1);
+    draw_spots(-1)
 
-
-    var ul = document.getElementById("ul_list");
-    var ul_selection=-1;
-    ul.onclick= function(event){
-        var target = event.target;
-        ul_selection=$(target).index();
-        draw_spots(ul_selection);
+    var ul = document.getElementById("ul_list")
+    var ul_selection = -1
+    ul.onclick = function(event) {
+        var target = event.target
+        ul_selection = $(target).index()
+        draw_spots(ul_selection)
     }
     for (var i = 0; i < SPOT_DATA.spots.length; i++) {
-        var spots1 = SPOT_DATA.spots[i];
-
-        var listItem = document.createElement("li");
-        listItem.textContent = spots1;
+        var listItem = document.createElement("li")
+        listItem.textContent = SPOT_DATA.spots[i]
         listItem.tabIndex="1"
-        ul.appendChild(listItem);
+        ul.appendChild(listItem)
     }
 </script>
-</html>
 {% endblock %}
        
