@@ -88,7 +88,7 @@ class BaseView(View):
 class CamDeleteView(DeleteView):
     model = ParkingCamera
     template_name = 'parking/cam_delete.html'
-    success_url = reverse_lazy('parking/cam_list.html')
+    success_url = reverse_lazy('parking:manage_spots')
 
 
 class CamListView(ListView):
@@ -141,7 +141,6 @@ class Zones(BaseView):
             'Multiple cameras detection not implemented yet'
 
         parking_data = [] if closest_cams else {'error': 'No near cameras'}
-
         for cam in closest_cams:
             if not cam.spots:
                 parking_data.append({
