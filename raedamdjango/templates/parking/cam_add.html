@@ -26,16 +26,75 @@
         
         }
     </style>
-    <h1>Add Camera</h1>
 
-    <div id='gepoint' style=" height: 50%; width:50%;">
-        <input id="latitude" type="float" style=" height: 15%; width:50%;" />
-        <input id="longitude" type="float" style=" height: 15%; width:50%;" />
-        <div id='map' style=" height: 75%; width:100%;"></div>
+    <div id='gepoint' style=" height: 20%; width:100%;">
+        longitude<input id="longitude" type="text"   disabled style=" height: 20%; width:10%;" />
+        latitude<input id="latitude" type="text"  disabled style=" height: 20%; width:10%;" /> <br><br>
+        url_cam<input id="url_cam" type="text" style="vertical-align: center; height: 20%; width:30%;" />
+
+        <button id="probe_url_button" type="submit">Probe URL</button><br><br>
+        
+        <button id="sumbit_button" style="  width:100%;" type="submit">Guardar</button>
     </div>
-    <button class="btn btn-success ml-2" type="submit">Guardar</button>
-
+    <div id='dummy_map' style="height:calc(100vh - 65px);">
+        <div id='map' style="height: 100%; width:100%;"></div>
+    </div>
+    <div id='dummy_img' style="height:calc(100vh - 65px);" >
+        <img class="img" id="image" width="800" height="400" src="" />
+    </div>
     <script>
+
+        CAM_DATA = {
+            url: "",
+            geopoint: "6.148355,-75.378672"
+        }
+        var longitude_input = document.getElementById("longitude")
+        var latitude_input = document.getElementById("latitude")
+        latitude_input.value="6.148355"
+        longitude_input.value="-75.378672"
+
+        var url_cam = document.getElementById("url_cam")
+
+        var dummy_map = document.getElementById("dummy_map")
+        var dummy_img = document.getElementById("dummy_img")
+        dummy_img.style.display = "none";
+
+        var image = document.getElementById("image")
+        var toggle=false
+
+        var sumbit_button = document.getElementById("sumbit_button")
+        sumbit_button.onclick=function(){
+            CAM_DATA.url=url_cam.value
+            CAM_DATA.geopoint=latitude_input.value+','+longitude_input.value
+            $.getJSON("{% url 'parking:create_new_camera' %}", CAM_DATA)
+            .done(function (response) {
+                console.log("response", response)
+            })
+            .fail(function (response, textStatus, error) {
+                console.log(response, textStatus, error)
+            })
+        
+        }
+
+        var probe_url_button = document.getElementById("probe_url_button")
+        probe_url_button.onclick=function(){
+
+            if(toggle){
+                toggle=false
+                dummy_map.style.display = "block";
+                dummy_img.style.display = "none";
+                probe_url_button.innerHTML="Probe URL"
+                
+
+            }else{
+                toggle=true
+                image.src=url_cam.value
+                probe_url_button.innerHTML="Back to map"
+                dummy_map.style.display = "none";
+                dummy_img.style.display = "block";
+            }
+            console.log(dummy_map.style.display)
+        }
         var map_loaded = false
         mapboxgl.accessToken = '{{MAP_API}}'
         var map = new mapboxgl.Map({
@@ -45,7 +104,9 @@
             zoom: 18
         })
 
-
+        var marker = new mapboxgl.Marker()
+        .setLngLat( [-75.378672, 6.148355])
+        .addTo(map);
         document.addEventListener('DOMContentLoaded', function() {
             if (navigator.geolocation) {
                 navigator.geolocation.getCurrentPosition(function (position) {
@@ -59,9 +120,25 @@
             }
         })
 
-
+        
         map.on('load', function () {
             map_loaded = true
         })
+        map.on('click', function (e) {
+            marker.setLngLat([e.lngLat.lng,e.lngLat.lat]).addTo(map)
+            latitude_input.value=e.lngLat.lat.toString()
+            longitude_input.value=e.lngLat.lng.toString()
+            $.ajax({
+                url: "http://192.75.71.26/mjpg/video.mjpg",
+                type:"GET",
+                success: function(result){
+
+                    console.log(result)
+                },
+                error: function(error){
+                    console.log(error)
+                }
+            })
+        });
     </script>
 {% endblock  %}

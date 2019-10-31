@@ -38,14 +38,30 @@ def remove_zone(request):
     camera_of_spots.save()
     return JsonResponse(SPOT_DATA, safe=False)
 
+def create_new_camera(request):
+    url = request.GET.get('url')
+    geopoint = request.GET.get('geopoint')
+    new_cam=ParkingCamera(url=url,geopoint=geopoint)
+    new_cam.save()
+    CAM_DATA = {
+        'url': url,
+        'geopoint': geopoint
+    }
+    return JsonResponse(CAM_DATA, safe=False)
 
+def edit_url_camera(request):
+    url = request.GET.get('url')
+    CAM_DATA = {
+        'url': url
+    }
+    return JsonResponse(CAM_DATA, safe=False)
 def add_new_zone(request):
     SPOT_DATA = json.loads(request.GET.get('SPOT_DATA'))
-    id_cam = SPOT_DATA.id_cam
-    x = SPOT_DATA.x
-    y = SPOT_DATA.y
-    width = SPOT_DATA.width
-    height = SPOT_DATA.height
+    id_cam = SPOT_DATA['id_cam']
+    x = SPOT_DATA['x']
+    y = SPOT_DATA['y']
+    width = SPOT_DATA['width']
+    height = SPOT_DATA['height']
     zone_data = {
         'id_cam': id_cam,
         'x': x,

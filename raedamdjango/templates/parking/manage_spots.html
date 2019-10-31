@@ -85,7 +85,10 @@
         padding: 10px;
     }
 </style>
-
+<div id="dummy_url">
+    url_cam<input id="url_cam" type="text" value= "{{ object.url }}" disabled style="vertical-align: center; height: 20%; width:30%;"/>
+    <button id="edit_url_button" type="submit">Edit url</button>
+</div>
 <div id="canvas_container">
     <img class="img" id="test" width="800" height="400" src="{{ object.url }}" />
     <canvas id="myCanvas" width="800" height="400">
@@ -106,10 +109,32 @@
         y: 0,
         width: 0,
         height: 0,
-        spots: []
+        spots: [],
+        url:"{{ object.url }}"
     }
     SPOT_DATA_CONTAINER = {SPOT_DATA}
-
+    var toggle=false
+    var edit_url_button = document.getElementById("edit_url_button")
+    edit_url_button.onclick=function(){
+        if(toggle){
+            edit_url_button.innerHTML="Edit url"
+            toggle=false
+            url_cam.disabled=true
+            $.getJSON("{% url 'parking:edit_url_camera' %}", CAM_DATA)
+            .done(function (response) {
+                console.log("response", response)
+            })
+            .fail(function (response, textStatus, error) {
+                console.log(response, textStatus, error)
+            })
+        }else{
+            edit_url_button.innerHTML="Save url"
+            toggle=true
+            url_cam.disabled=false
+        }
+    }
+    var url_cam = document.getElementById("url_cam")
+    url_cam.value="{{ object.url }}"
     //ADD NEW ZONE LISTENEER
     var add_spot_button = document.getElementById("add_spot_button")
     add_spot_button.onclick = function(e){
@@ -132,7 +157,9 @@
             SPOT_DATA.height
         ])
         if(Math.abs(SPOT_DATA.width) > 0 && Math.abs(SPOT_DATA.height) > 0){
-            $.getJSON("{% url 'parking:add_new_zone' %}", SPOT_DATA)
+
+            SPOT_DATA_CONTAINER.SPOT_DATA = JSON.stringify(SPOT_DATA)
+            $.getJSON("{% url 'parking:add_new_zone' %}",SPOT_DATA_CONTAINER)
             .done(function (response) {
                 var listItem = document.createElement("li")
                 listItem.textContent = SPOT_DATA.spots[SPOT_DATA.spots.length-1]
