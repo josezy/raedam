@@ -51,9 +51,17 @@ def create_new_camera(request):
 
 def edit_url_camera(request):
     url = request.GET.get('url')
+    id_cam = request.GET.get('id_cam')
     CAM_DATA = {
         'url': url
     }
+    try:
+        camera_of_spots = ParkingCamera.objects.get(pk=id_cam)
+    except (KeyError, ParkingCamera.DoesNotExist):
+        return JsonResponse(zone_data, safe=False)
+    else:
+        camera_of_spots.url=url
+        camera_of_spots.save()
     return JsonResponse(CAM_DATA, safe=False)
 def add_new_zone(request):
     SPOT_DATA = json.loads(request.GET.get('SPOT_DATA'))
