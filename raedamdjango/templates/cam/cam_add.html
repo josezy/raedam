@@ -33,20 +33,27 @@
         url_cam<input id="url_cam" type="text" style="vertical-align: center; height: 20%; width:30%;" />
 
         <button id="probe_url_button" type="submit">Probe URL</button><br><br>
-        
+        TIPO DE CAMARA<select id="model_type_list">
+            <option value="PR">PR</option>
+            <option value="PD" selected="selected">PD</option>
+        </select>
         <button id="sumbit_button" style="  width:100%;" type="submit">Guardar</button>
     </div>
-    <div id='dummy_map' style="height:calc(100vh - 65px);">
+    <div id='dummy_map' style="height:calc(150vh - 65px);">
         <div id='map' style="height: 100%; width:100%;"></div>
     </div>
-    <div id='dummy_img' style="height:calc(100vh - 65px);" >
+    <div id='dummy_img' style="height:calc(150vh - 65px);" >
         <img class="img" id="image" width="800" height="400" src="" />
     </div>
     <script>
 
+
+
+        var model_type_list = document.getElementById("model_type_list")
         CAM_DATA = {
             url: "",
-            geopoint: "6.148355,-75.378672"
+            geopoint: "6.148355,-75.378672",
+            model_detector:"PR"
         }
         var longitude_input = document.getElementById("longitude")
         var latitude_input = document.getElementById("latitude")
@@ -65,9 +72,12 @@
         var sumbit_button = document.getElementById("sumbit_button")
         sumbit_button.onclick=function(){
             CAM_DATA.url=url_cam.value
+            CAM_DATA.model_detector=model_type_list.options[model_type_list.selectedIndex].value;
             CAM_DATA.geopoint=latitude_input.value+','+longitude_input.value
-            $.getJSON("{% url 'parking:create_new_camera' %}", CAM_DATA)
+            console.log(CAM_DATA)
+            $.getJSON("{% url 'cameras:create_new_camera' %}", CAM_DATA)
             .done(function (response) {
+                location.replace("{% url 'cameras:manage_cameras' %}")
                 console.log("response", response)
             })
             .fail(function (response, textStatus, error) {

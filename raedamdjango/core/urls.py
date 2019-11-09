@@ -8,6 +8,10 @@ urlpatterns = [
     path('', RedirectView.as_view(url='/parking/'), name='home'),
     path('parking/', include(
         ('parking.urls', 'parking'), namespace='parking')),
+    path('cameras/', include(
+        ('cameras.urls', 'cameras'), namespace='cameras')),
+    path('pederastian_detector/', include(
+        ('pederastian_detector.urls', 'pederastian_detector'), namespace='pederastian_detector')),
     path('admin/', admin.site.urls),
 ]
 

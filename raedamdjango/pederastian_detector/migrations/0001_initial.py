@@ -15,19 +15,19 @@ class Migration(migrations.Migration):
 
     operations = [
         migrations.CreateModel(
-            name='ParkingCamera_reports',
+            name='PederastianCamera_reports',
             fields=[
                 ('id', models.AutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
-                ('ocupied_spots', models.PositiveIntegerField()),
+                ('amount_of_people', models.PositiveIntegerField()),
                 ('created', models.DateTimeField(auto_now_add=True)),
                 ('camera', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, to='cameras.Camera')),
             ],
         ),
         migrations.CreateModel(
-            name='ParkingCamera',
+            name='PederastianCamera',
             fields=[
                 ('id', models.AutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
-                ('spots', django.contrib.postgres.fields.ArrayField(base_field=django.contrib.postgres.fields.ArrayField(base_field=models.PositiveIntegerField(), size=4), default=list, size=None)),
+                ('detection_zone', django.contrib.postgres.fields.ArrayField(base_field=models.PositiveIntegerField(), size=4)),
                 ('camera', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, to='cameras.Camera')),
             ],
         ),

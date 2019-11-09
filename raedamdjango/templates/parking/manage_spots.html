@@ -86,10 +86,10 @@
     }
 </style>
 
-url_cam<input id="url_cam" type="text" value= "{{ object.url }}" disabled style="vertical-align: center; height: 10%; width:30%;"/>
+url_cam<input id="url_cam" type="text" value= "{{ camera.fields.url }}" disabled style="vertical-align: center; height: 10%; width:30%;"/>
 <button id="edit_url_button" type="submit">Edit url</button>
 <div id="canvas_container">
-    <img id="img" width="800" height="400" src="{{ object.url }}" />
+    <img id="img" width="800" height="400" src="{{ camera.fields.url }}" />
     <canvas id="myCanvas" width="800" height="400">
         Your browser does not support the HTML5 canvas tag.
     </canvas> 
@@ -103,14 +103,15 @@ url_cam<input id="url_cam" type="text" value= "{{ object.url }}" disabled style=
 
 
 <script>
+    console.log({{ spots.fields.spots|safe }})
     SPOT_DATA = {
-        id_cam: "{{ object.id }}",
+        id_cam: "{{ camera.pk }}",
         x: 0,
         y: 0,
         width: 0,
         height: 0,
         spots: [],
-        url:"{{ object.url }}"
+        url:"{{ camera.fields.url }}"
     }
     SPOT_DATA_CONTAINER = {SPOT_DATA}
     var toggle=false
@@ -123,7 +124,7 @@ url_cam<input id="url_cam" type="text" value= "{{ object.url }}" disabled style=
             image.src=url_cam.value
             toggle=false
             url_cam.disabled=true
-            $.getJSON("{% url 'parking:edit_url_camera' %}", SPOT_DATA)
+            $.getJSON("{% url 'cameras:edit_url_camera' %}", SPOT_DATA)
             .done(function (response) {
                 console.log("response", response)
             })
@@ -137,7 +138,7 @@ url_cam<input id="url_cam" type="text" value= "{{ object.url }}" disabled style=
         }
     }
     var url_cam = document.getElementById("url_cam")
-    url_cam.value="{{ object.url }}"
+    url_cam.value="{{ camera.fields.url }}"
     //ADD NEW ZONE LISTENEER
     var add_spot_button = document.getElementById("add_spot_button")
     add_spot_button.onclick = function(e){
@@ -162,7 +163,7 @@ url_cam<input id="url_cam" type="text" value= "{{ object.url }}" disabled style=
         if(Math.abs(SPOT_DATA.width) > 0 && Math.abs(SPOT_DATA.height) > 0){
 
             SPOT_DATA_CONTAINER.SPOT_DATA = JSON.stringify(SPOT_DATA)
-            $.getJSON("{% url 'parking:add_new_zone' %}",SPOT_DATA_CONTAINER)
+            $.getJSON("{% url 'parking:add_new_zone' %}", SPOT_DATA_CONTAINER)
             .done(function (response) {
                 var listItem = document.createElement("li")
                 listItem.textContent = SPOT_DATA.spots[SPOT_DATA.spots.length-1]
@@ -241,7 +242,8 @@ url_cam<input id="url_cam" type="text" value= "{{ object.url }}" disabled style=
         }
     })
 
-    SPOT_DATA.spots = {{ object.spots }}
+    SPOT_DATA.spots = {{ spots.fields.spots }}
+    console.log({{ spots.fields.spots }})
     function draw_spots(selection){
 
         ctx.clearRect(0, 0, canvas.width, canvas.height)

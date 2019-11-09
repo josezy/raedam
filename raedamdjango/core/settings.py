@@ -63,8 +63,10 @@ MAP_API = PLACEHOLDER_FOR_SECRET
 FETCH_ZONES_INTERVAL = 20000
 MAX_ZONE_REQUESTS = 7           # Max number of requests on an opened page
 CAMERA_RADIUS = 500             # Radius for looking near cameras [m]
-CAR_CLS_NAMES = ['car', 'bus', 'truck']
+CAR_CLS_NAMES = ['person']
 CAR_SCORE = 0.8
+PEDERASTIAN_CLS_NAMES = ['person']
+PEDERASTIAN_SCORE = 0.8
 ENABLE_DETECTOR = True
 
 
@@ -111,6 +113,8 @@ INSTALLED_APPS = [
 
     'core',
     'parking',
+    'cameras',
+    'pederastian_detector',
 ]
 
 MIDDLEWARE = [

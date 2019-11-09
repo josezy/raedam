@@ -21,6 +21,7 @@ var map_loaded = false
 var zones_timer = undefined
 var request_counter = 1
 var cameras = {}
+var camera_information = {}
 
 
 mapboxgl.accessToken = '{{MAP_API}}'
@@ -53,6 +54,45 @@ map.on('load', function () {
 })
 
 
+$.getJSON('{% url "cameras:get_camera_position" %}').done( 
+        function(cams) {
+            console.log(cams.cameras)
+            camera_information=cams
+            cams.cameras.forEach(function (cam) {
+
+                var marker = undefined
+                var marker_elem = undefined
+                var marker_subtitle = undefined
+                var popup = undefined
+
+                if (cam.shortid in cameras) {
+                    marker = cameras[cam.shortid]['marker']
+                    marker_elem = cameras[cam.shortid]['marker_elem']
+                    marker_subtitle = cameras[cam.shortid]['marker_subtitle']
+                    popup = cameras[cam.shortid]['popup']
+                } else {
+                    marker_elem = document.createElement('div')
+                    marker_elem.className = 'camera_marker'
+
+                    marker_subtitle = document.createElement('div')
+                    marker_subtitle.className = 'marker_subtitle'
+                    marker_elem.appendChild(marker_subtitle)
+                    console.log(cam.coords)
+                    popup = new mapboxgl.Popup({offset: 25})
+                    marker = new mapboxgl.Marker(marker_elem)
+                        .setLngLat(cam.coords)
+                        .setPopup(popup)
+                        .addTo(map)
+
+                    cameras[cam.shortid] = {marker, marker_elem, marker_subtitle, popup}
+                }
+            })
+        }).fail(
+        function(response, textStatus, error) {
+            console.log(response, textStatus, error)
+        }
+)
+
 function fetchZones() {
     if (!map_loaded) return
 
@@ -64,7 +104,13 @@ function fetchZones() {
         latitude: map_center.lat,
         longitude: map_center.lng
     }
+/*
     $.getJSON('{% url "parking:zones" %}', data).done(updateCameras).fail(
+        function(response, textStatus, error) {
+            console.log(response, textStatus, error)
+        }
+    )*/
+    $.getJSON('{% url "pederestian_detector:detection" %}', data).done(updateCameras).fail(
         function(response, textStatus, error) {
             console.log(response, textStatus, error)
         }
@@ -93,7 +139,7 @@ function updateCameras(cams) {
             marker_subtitle = document.createElement('div')
             marker_subtitle.className = 'marker_subtitle'
             marker_elem.appendChild(marker_subtitle)
-
+            console.log(cam.coords)
             popup = new mapboxgl.Popup({offset: 25})
             marker = new mapboxgl.Marker(marker_elem)
                 .setLngLat(cam.coords)
@@ -102,9 +148,13 @@ function updateCameras(cams) {
 
             cameras[cam.shortid] = {marker, marker_elem, marker_subtitle, popup}
         }
-        marker_elem.style.backgroundColor = cam.free_spots > 0 ? "#0f04" : "#f004"
-        marker_subtitle.innerText = (cam.total_spots - cam.free_spots) + '/' + cam.total_spots
-        popup.setHTML(`<img src='${cam.frame}?${new Date().getTime()}' width='400px'>`)
+        if(cam.model_detector=="PR"){
+            marker_elem.style.backgroundColor = cam.free_spots > 0 ? "#0f04" : "#f004"
+            marker_subtitle.innerText = (cam.total_spots - cam.free_spots) + '/' + cam.total_spots
+        }
+        popup.setHTML('<div>'+
+  '<p>FREE SPOTS: </p>'+
+  '<img src="data:image/jpeg;base64,'+cam.frame_base64+'" width="200" height="100" alt="DETECTION" />'+'</div>')
     })
 }
 

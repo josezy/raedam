@@ -1,0 +1,184 @@
+{% extends 'core/base.html' %}
+
+{% block main %}
+<style>
+    h1 {
+        font-family: sans-serif;
+        font-size: 64px;
+        color: #CCC;
+        padding: 5px;
+        margin: 5px;
+    }
+    #img {
+        position: absolute;
+        z-index: 1;
+        border-radius: 20px;
+    }
+    #canvas_container {
+        display:inline-block;
+        width:800px; 
+        height:400px;
+        margin: 0 auto; 
+        background: black; 
+        position:relative; 
+        border:0px solid black; 
+        border-radius: 20px; 
+        box-shadow: 0 5px 50px #333
+    }
+    #myCanvas{
+        position:relative;
+        z-index:20;
+    }
+</style>
+
+url_cam<input id="url_cam" type="text" value= "{{ camera.fields.url }}" disabled style="vertical-align: center; height: 10%; width:30%;"/>
+<button id="edit_url_button" type="submit">Edit url</button>
+<div id="canvas_container">
+    <img id="img" width="800" height="400" src="{{ camera.fields.url }}" />
+    <canvas id="myCanvas" width="800" height="400">
+        Your browser does not support the HTML5 canvas tag.
+    </canvas> 
+   
+</div>
+
+<button id="edit_roi_button" type="button" >Edit Detection Zone</button>
+
+
+<script>
+    DATA = {
+        id_cam: "{{ camera.pk }}",
+        x: 0,
+        y: 0,
+        width: 0,
+        height: 0,
+        detection_zone: [],
+        url:"{{ camera.fields.url }}"
+    }
+   /* $.getJSON("{% url 'pederastian_detector:get_reports' %}", function(data) {
+           // $('#container').highcharts(data);
+    });*/
+    DATA.detection_zone={{ detection_zone.fields.detection_zone|safe }}
+    DATA_CONTAINER = {DATA}
+    var toggle_roi=false
+    var edit_roi_button = document.getElementById("edit_roi_button")
+    edit_roi_button.onclick=function(){
+        
+        if(toggle_roi){
+            toggle_roi=false
+            edit_url_button.innerHTML="Edit zone detection"
+            DATA.width = Math.abs(endX-initX)
+            DATA.height = Math.abs(endY-initY)
+
+            if(endX - initX < 0){
+                initX = endX
+            }
+            if(endY - initY < 0){
+                initY = endY
+            }
+            DATA.x = initX
+            DATA.y = initY
+
+            if(Math.abs(DATA.width) > 0 && Math.abs(DATA.height) > 0){
+
+                $.getJSON("{% url 'pederestian_detector:edit_roi' %}", DATA)
+                .done(function (response) {
+                    console.log("response", response)
+                })
+                .fail(function (response, textStatus, error) {
+                    console.log(response, textStatus, error)
+                })
+            }
+        }
+        else{
+            edit_url_button.innerHTML="Save zone detection"
+            toggle_roi=true
+            
+        }
+    }
+    var image = document.getElementById("img")
+    var toggle_url=false
+    var edit_url_button = document.getElementById("edit_url_button")
+    edit_url_button.onclick=function(){
+        if(toggle_url){
+            edit_url_button.innerHTML="Edit url"
+            DATA.url=url_cam.value
+            image.src=url_cam.value
+            toggle_url=false
+            url_cam.disabled=true
+            $.getJSON("{% url 'cameras:edit_url_camera' %}", DATA)
+            .done(function (response) {
+                console.log("response", response)
+            })
+            .fail(function (response, textStatus, error) {
+                console.log(response, textStatus, error)
+            })
+        }else{
+            edit_url_button.innerHTML="Save url"
+            toggle_url=true
+            url_cam.disabled=false
+        }
+    }
+    var url_cam = document.getElementById("url_cam")
+    url_cam.value="{{ camera.fields.url }}"
+   
+    //CANVAS INIT
+    var canvas = document.getElementById("myCanvas")
+    var ctx = canvas.getContext("2d")
+    ctx.beginPath()
+    
+    //USEFUL VARIABLES INIT
+    var initX = 0
+    var initY = 0
+    var endX = 0
+    var endY = 0
+    var isMouseDown = false
+
+    canvas.addEventListener('mousedown', function(e){
+        initX = e.offsetX
+        initY = e.offsetY
+        isMouseDown = true
+            console.log(endX,endY)
+    })
+
+    canvas.addEventListener('mouseup', function(e){
+        isMouseDown = false
+        console.log(endX,endY)
+    })
+
+    canvas.addEventListener('mousemove', function(e){
+        if (isMouseDown && toggle_roi) {
+            console.log(endX,endY)
+            endX = e.offsetX
+            endY = e.offsetY
+
+            ctx.clearRect(0, 0, canvas.width, canvas.height)
+            ctx.beginPath()
+
+            ctx.strokeStyle = 'red'
+            ctx.lineWidth = 5
+            ctx.rect(initX, initY, endX - initX, endY - initY)
+            ctx.stroke()
+        }
+    })
+
+    function draw_roi(){
+
+        ctx.clearRect(0, 0, canvas.width, canvas.height)
+        ctx.beginPath()
+        ctx.strokeStyle = 'black'
+        ctx.lineWidth = 3
+        ctx.rect(
+            DATA.detection_zone[0],
+            DATA.detection_zone[1],
+            DATA.detection_zone[2],
+            DATA.detection_zone[3]
+        )
+        ctx.stroke()
+       
+    }
+    draw_roi()
+
+  
+</script>
+{% endblock %}
+       

@@ -68,19 +68,4 @@ class BaseModel(models.Model):
         abstract = True
 
 
-class Camera(BaseModel):
-    url = models.URLField(unique=True)
-    # Always use the format 'lon.gitude,lat.itude'
-    geopoint = models.CharField(max_length=100)
-    is_active = models.BooleanField(default=True)
 
-    @cached_property
-    def coords(self):
-        return list(map(lambda x: Decimal(x), self.geopoint.split(',')))
-
-    @cached_property
-    def last_frame(self):
-        return f"{settings.MEDIA_URL}{self.short_id}.png"
-
-    class Meta:
-        abstract = True

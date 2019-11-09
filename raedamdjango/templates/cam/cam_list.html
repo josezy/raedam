@@ -1,0 +1,28 @@
+{% extends 'core/base.html' %}
+{% block title %}Home{% endblock title %}
+{% block main %}
+<a href="{% url 'cameras:new_camera' %}">NUEVA CAMARA</a>
+{% for cams in object_list %}
+
+<div class="card">
+
+	<div class="card-header">
+		<span class="font-weight-bold">{{ cams.url }}</span> &middot;
+		<span class="text-muted"> {{ cams.geopoint }}</span>
+	</div>
+
+	{% if cams.model_detector in 'PR'  %} 
+		<a href="{% url 'parking:manage_spots' id_cam=cams.id %}">configurar zonas {{ cams.model_detector }}</a> 
+	{% endif %}
+	
+	{% if cams.model_detector in 'PD'  %} 
+		<a href="{% url 'pederastian_detector:manage_detection' id_cam=cams.id %}">configurar detection de personas {{ cams.model_detector }}</a> 
+	{% endif %}
+
+		| <a href="delete_camera/?id_cam={{ cams.id }}">Eliminar cámara</a>
+		
+</div>
+
+<br />
+{% endfor %}
+{% endblock main %}
