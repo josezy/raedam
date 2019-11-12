@@ -5,6 +5,8 @@ from django.db import models
 from django.conf import settings
 from django.utils.functional import cached_property
 
+from tenant_schemas.models import TenantQueryset
+
 from decimal import Decimal
 
 
@@ -69,6 +71,8 @@ class BaseModel(models.Model):
 
 
 class Camera(BaseModel):
+    objects = TenantQueryset.as_manager()
+
     url = models.URLField(unique=True)
     # Always use the format 'lon.gitude,lat.itude'
     geopoint = models.CharField(max_length=100)
