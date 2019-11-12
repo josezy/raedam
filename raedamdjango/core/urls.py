@@ -2,13 +2,19 @@ from django.conf import settings
 from django.contrib import admin
 from django.urls import path, include
 from django.conf.urls.static import static
-from django.views.generic.base import RedirectView
+
+from core.views import Home
+from core.admin import AdminLoginView
+
 
 urlpatterns = [
-    path('', RedirectView.as_view(url='/parking/'), name='home'),
+    path('', Home.as_view(), name='home'),
     path('parking/', include(
         ('parking.urls', 'parking'), namespace='parking')),
+
     path('admin/', admin.site.urls),
+    path('accounts/', include('django.contrib.auth.urls')),
+    path('accounts/login/', AdminLoginView.as_view(), name='login'),
 ]
 
 if settings.DEBUG:

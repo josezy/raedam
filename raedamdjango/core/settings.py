@@ -155,6 +155,10 @@ WSGI_APPLICATION = 'core.wsgi.application'
 
 DEFAULT_FILE_STORAGE = 'tenant_schemas.storage.TenantFileSystemStorage'
 
+LOGIN_URL = '/accounts/login/'
+LOGIN_REDIRECT_URL = '/'
+LOGOUT_REDIRECT_URL = '/accounts/login/'
+
 
 ###############################################################################
 # Database
