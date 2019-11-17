@@ -15,8 +15,8 @@ class Command(BaseCommand):
     def handle(self, *args, **kwargs):
         schema_name = kwargs['schema_name']
 
-        public_exists = Organization.objects.filter(schema_name='public').exists()
-        if schema_name != 'public' and not public_exists:
+        public_orgs = Organization.objects.filter(schema_name='public')
+        if schema_name != 'public' and not public_orgs.exists():
             print(f"[!] Error: 'public' organization must be created first")
             raise
 
@@ -63,12 +63,15 @@ class Command(BaseCommand):
                 f"[i] Tenant superuser '{user.username}' already exists:\n    "
                 f"User #{user.short_id} org: {user.organization}"
             )
-            create_superuser = input('Add another superuser? y/[n]: ')[0].lower() == 'y'
+            create_superuser =\
+                input('Add another superuser? y/[n]: ')[0].lower() == 'y'
 
         if create_superuser:
             call_command('createsuperuser', schema='public')
-            user = User.objects.filter(is_superuser=True).order_by('created').last()
-            assert user is not None, 'A user did not exist after createsuperuser ran (did it fail?)'
+            user = User.objects\
+                .filter(is_superuser=True).order_by('created').last()
+            assert user is not None,\
+                'A user did not exist after createsuperuser ran (did it fail?)'
             user.organization_id = org.id
             user.save()
             print(

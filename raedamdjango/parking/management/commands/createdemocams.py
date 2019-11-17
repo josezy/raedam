@@ -25,7 +25,7 @@ cameras_data = [
 
 
 class Command(BaseCommand):
-    help = 'Create demo cameras data for testing'
+    help = "Create demo camera data for 'devorg' tenant"
 
     def handle(self, *args, **kwargs):
         with schema_context('devorg'):
