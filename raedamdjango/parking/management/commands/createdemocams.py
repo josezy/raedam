@@ -1,3 +1,5 @@
+from tenant_schemas.utils import schema_context
+
 from django.core.management.base import BaseCommand
 from parking.models import ParkingCamera
 
@@ -23,10 +25,11 @@ cameras_data = [
 
 
 class Command(BaseCommand):
-    help = 'Create demo cameras data for testing'
+    help = "Create demo camera data for 'devorg' tenant"
 
     def handle(self, *args, **kwargs):
-        for cam_data in cameras_data:
-            ParkingCamera.objects.get_or_create(
-                url=cam_data['url'], defaults=cam_data)
+        with schema_context('devorg'):
+            for cam_data in cameras_data:
+                ParkingCamera.objects.get_or_create(
+                    url=cam_data['url'], defaults=cam_data)
         print("[!] Data created succesfully")

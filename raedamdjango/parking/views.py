@@ -4,16 +4,14 @@ import mrcnn
 import numpy as np
 import tensorflow as tf
 
-from django.db import connection
 from django.conf import settings
-from django.views import View
-from django.shortcuts import render
-from django.http import JsonResponse
 
-from typing import Dict, Any
+from tenant_schemas.utils import schema_context
+
 from decimal import Decimal
 
 from core.utils import coords_in_radius
+from core.view_utils import BaseView
 from parking.models import ParkingCamera
 from cerebro import load_model, clean_boxes
 
@@ -21,24 +19,6 @@ from cerebro import load_model, clean_boxes
 if settings.ENABLE_DETECTOR and settings.IS_RUNSERVER:
     model = load_model()
     graph = tf.get_default_graph()
-
-
-class BaseView(View):
-    def global_context(self, request=None):
-        return {
-            'DEBUG': settings.DEBUG,
-            'view': f'{self.__module__}.{self.__class__.__name__}',
-            'sql_queries': len(connection.queries),
-        }
-
-    def render_template(self, request, context=None, template=None):
-        return render(request, template or self.template, {
-            **self.global_context(),
-            **(context or {}),
-        })
-
-    def render_json(self, json_dict: Dict[str, Any], **kwargs):
-        return JsonResponse(json_dict, **kwargs)
 
 
 class Parking(BaseView):
@@ -60,14 +40,15 @@ class Zones(BaseView):
         lat = Decimal(request.GET.get('latitude'))
         lng = Decimal(request.GET.get('longitude'))
 
-        closest_cams = [
-            cam for cam in ParkingCamera.objects.filter(is_active=True)
-            if coords_in_radius(
-                cam.coords,
-                [lng, lat],
-                settings.CAMERA_RADIUS
-            )
-        ][:1]  # Hard limit number of detections
+        with schema_context(request.schema_name):
+            closest_cams = [
+                cam for cam in ParkingCamera.objects.filter(is_active=True)
+                if coords_in_radius(
+                    cam.coords,
+                    [lng, lat],
+                    settings.CAMERA_RADIUS
+                )
+            ][:1]  # Hard limit number of detections
 
         assert len(closest_cams) < 2,\
             'Multiple cameras detection not implemented yet'
