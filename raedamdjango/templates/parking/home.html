@@ -51,10 +51,12 @@ map.on('load', function () {
     map_loaded = true
     zones_timer = setInterval(fetchZones, {{FETCH_ZONES_INTERVAL}})
     fetchZones()
+    GetCameraPosition()
 })
 
-
-$.getJSON('{% url "cameras:get_camera_position" %}').done( 
+function GetCameraPosition()
+{
+    $.getJSON('{% url "cameras:get_camera_position" %}').done( 
         function(cams) {
             console.log(cams.cameras)
             camera_information=cams
@@ -91,8 +93,8 @@ $.getJSON('{% url "cameras:get_camera_position" %}').done(
         function(response, textStatus, error) {
             console.log(response, textStatus, error)
         }
-)
-
+    )
+}
 function fetchZones() {
     if (!map_loaded) return
 
@@ -110,7 +112,7 @@ function fetchZones() {
             console.log(response, textStatus, error)
         }
     )*/
-    $.getJSON('{% url "pederestian_detector:detection" %}', data).done(updateCameras).fail(
+    $.getJSON('{% url "pedestrian_detector:detection" %}', data).done(updateCameras).fail(
         function(response, textStatus, error) {
             console.log(response, textStatus, error)
         }
@@ -154,7 +156,7 @@ function updateCameras(cams) {
         }
         popup.setHTML('<div>'+
   '<p>FREE SPOTS: </p>'+
-  '<img src="data:image/jpeg;base64,'+cam.frame_base64+'" width="200" height="100" alt="DETECTION" />'+'</div>')
+  '<img src="data:image/jpeg;base64,'+cam.frame_base64+'" width="800" height="400" alt="DETECTION" />'+'</div>')
     })
 }
 

@@ -16,7 +16,8 @@
 	{% endif %}
 	
 	{% if cams.model_detector in 'PD'  %} 
-		<a href="{% url 'pederastian_detector:manage_detection' id_cam=cams.id %}">configurar detection de personas {{ cams.model_detector }}</a> 
+		<a href="{% url 'pedestrian_detector:manage_detection' id_cam=cams.id %}">configurar detection de personas {{ cams.model_detector }}</a> || 
+		<a href="{% url 'pedestrian_detector:dashboard' id_cam=cams.id %}">dashboard</a> 
 	{% endif %}
 
 		| <a href="delete_camera/?id_cam={{ cams.id }}">Eliminar cámara</a>

@@ -65,9 +65,10 @@ MAX_ZONE_REQUESTS = 7           # Max number of requests on an opened page
 CAMERA_RADIUS = 500             # Radius for looking near cameras [m]
 CAR_CLS_NAMES = ['person']
 CAR_SCORE = 0.8
-PEDERASTIAN_CLS_NAMES = ['person']
-PEDERASTIAN_SCORE = 0.8
+PEDESTRIAN_CLS_NAMES = ['person']
+PEDESTRIAN_SCORE = 0.8
 ENABLE_DETECTOR = True
+ENABLE_FALSE_DETECTOR=False
 
 
 # !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
@@ -84,8 +85,6 @@ globals().update(ENV_SECRETS)
 # settings set via environemtn variables
 ENV_OVERRIDES = load_env_settings(env=dict(os.environ), defaults=globals())
 globals().update(ENV_OVERRIDES)
-
-
 SETTINGS_SOURCES = {
     'settings.py': SETTINGS_DEFAULTS,
     ENV_SECRETS_FILE: ENV_SECRETS,
@@ -114,7 +113,8 @@ INSTALLED_APPS = [
     'core',
     'parking',
     'cameras',
-    'pederastian_detector',
+    'pedestrian_detector',
+    'chartjs',
 ]
 
 MIDDLEWARE = [

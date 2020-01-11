@@ -10,8 +10,8 @@ urlpatterns = [
         ('parking.urls', 'parking'), namespace='parking')),
     path('cameras/', include(
         ('cameras.urls', 'cameras'), namespace='cameras')),
-    path('pederastian_detector/', include(
-        ('pederastian_detector.urls', 'pederastian_detector'), namespace='pederastian_detector')),
+    path('pedestrian_detector/', include(
+        ('pedestrian_detector.urls', 'pedestrian_detector'), namespace='pedestrian_detector')),
     path('admin/', admin.site.urls),
 ]
 

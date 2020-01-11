@@ -73,7 +73,7 @@
         sumbit_button.onclick=function(){
             CAM_DATA.url=url_cam.value
             CAM_DATA.model_detector=model_type_list.options[model_type_list.selectedIndex].value;
-            CAM_DATA.geopoint=latitude_input.value+','+longitude_input.value
+            CAM_DATA.geopoint=longitude_input.value+','+latitude_input.value
             console.log(CAM_DATA)
             $.getJSON("{% url 'cameras:create_new_camera' %}", CAM_DATA)
             .done(function (response) {

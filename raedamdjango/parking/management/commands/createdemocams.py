@@ -1,7 +1,7 @@
 from django.core.management.base import BaseCommand
 from cameras.models import Camera
 from parking.models import ParkingCamera
-from pederastian_detector.models import PederastianCamera
+from pedestrian_detector.models import PedestrianCamera
 
 cameras_data = [
     {  # River parking
@@ -13,7 +13,7 @@ cameras_data = [
     {  # Good Canadian parking lot
         'geopoint': '-75.378811,6.148104',  # Iglesia
         'url': "http://192.75.71.26/mjpg/video.mjpg",
-        'model_detector':Camera.PEDERESTIAN
+        'model_detector':Camera.PEDESTRIAN
     },
     {  # Small parking
         'geopoint': '-75.373503,6.147159',
@@ -41,6 +41,6 @@ class Command(BaseCommand):
                 ParkAux=ParkingCamera(camera=cameras)
                 ParkAux.save()
             elif(cameras.model_detector=='PD'):
-                PedAux=PederastianCamera(detection_zone=[200,100,200,100],camera=cameras)
+                PedAux=PedestrianCamera(detection_zone=[200,100,200,100],camera=cameras)
                 PedAux.save()
         print("[!] Data created succesfully")

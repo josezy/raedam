@@ -4,7 +4,7 @@ from django.shortcuts import render
 from django.http import JsonResponse
 from django.views.generic import ListView
 from cameras.models import Camera
-from pederastian_detector.models import PederastianCamera
+from pedestrian_detector.models import PedestrianCamera
 from parking.models import ParkingCamera
 from typing import Dict, Any
 from django.db import connection
@@ -30,7 +30,7 @@ def create_new_camera(request):
         ParkAux=ParkingCamera(camera=new_cam)
         ParkAux.save()
     elif(model_detector=='PD'):
-        PedAux=PederastianCamera(detection_zone=[200,100,200,100],camera=new_cam)
+        PedAux=PedestrianCamera(detection_zone=[200,100,200,100],camera=new_cam)
         PedAux.save()
 
     CAM_DATA = {

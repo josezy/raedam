@@ -9,10 +9,10 @@ from decimal import Decimal
 class Camera(BaseModel):
 
     PARKING = 'PR'
-    PEDERASTIAN = 'PD'
+    PEDESTRIAN = 'PD'
     MODEL_DETECTOR = [
         (PARKING, 'Parking'),
-        (PEDERASTIAN, 'Pederestian'),
+        (PEDESTRIAN, 'Pedestrian'),
     ]
     model_detector = models.CharField(
         max_length=2,
