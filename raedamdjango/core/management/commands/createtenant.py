@@ -67,7 +67,7 @@ class Command(BaseCommand):
                 input('Add another superuser? y/[n]: ')[0].lower() == 'y'
 
         if create_superuser:
-            call_command('createsuperuser', schema='public')
+            call_command('createsuperuser')
             user = User.objects\
                 .filter(is_superuser=True).order_by('created').last()
             assert user is not None,\
