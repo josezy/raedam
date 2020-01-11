@@ -47,7 +47,7 @@ MEDIA_ROOT = os.path.join(DATA_DIR, 'media')
 
 
 # Don't change values here, only set these values in your env/secrets.env file
-POSTGRES_HOST = '127.0.0.1'
+POSTGRES_HOST = 'localhost'
 POSTGRES_PORT = 5432
 POSTGRES_DB = 'postgres'
 POSTGRES_USER = 'postgres'
