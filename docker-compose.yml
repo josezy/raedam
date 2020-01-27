@@ -1,0 +1,35 @@
+version: '3.7'
+
+services:
+#  nginx:
+#    image: nginx:alpine
+#    volumes:
+#      - ./etc/nginx/raedam.conf:/etc/nginx/nginx.conf
+#      - ./etc/nginx/snippets:/opt/raedam/etc/nginx/snippets
+#      - ./data/certs:/opt/raedam/data/certs
+#      - ./data/static:/opt/raedam/data/static
+#      - ./data/logs:/opt/raedam/data/logs
+#    ports:
+#      - 80:80
+#      - 443:443
+#    depends_on:
+#      - django
+
+  django:
+    build: .
+    volumes:
+      - ./data/logs:/opt/raedam/data/logs
+      - ./data/static:/opt/raedam/data/static
+      - ./env:/opt/raedam/env
+      - ./raedamdjango:/opt/raedam/raedamdjango
+      - .:/opt/raedam
+    depends_on:
+      - postgres
+    environment:
+      - POSTGRES_HOST=postgres
+      - SERVER_ENV=PROD
+
+  postgres:
+    image: postgres:12-alpine
+    volumes:
+      - ./data/database:/var/lib/postgresql/data
