@@ -1,0 +1,10 @@
+.DS_Store
+.github
+.git/*
+!.git/HEAD
+!.git/refs/heads
+.venv
+.venv-docker
+.mypy_cache
+__pycache__
+data
